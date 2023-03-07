@@ -107,7 +107,9 @@ jobs:
       test-status: ${{ job.status }}
   # Build job
   nextjs-build:
-    needs: nextjs-test
+    needs:
+      - lambda-deploy
+      - nextjs-test
     if: ${{ needs.nextjs-test.outputs.test-status == 'success' }}
     runs-on: ubuntu-latest
     steps:
