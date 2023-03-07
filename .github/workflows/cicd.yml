@@ -16,7 +16,7 @@ env:
   project_name: simple-dataset-generating-supporter
   server_directory: ./server
   client_directory: ./client
-  api_gateway_name: PingFunctionApi
+  api_gateway_name: MyApiGateway
 
 # Allow one concurrent deployment
 concurrency:
