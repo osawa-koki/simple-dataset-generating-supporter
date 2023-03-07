@@ -56,7 +56,7 @@ jobs:
             --resolve-image-repos \
             --stack-name ${{ env.project_name }} \
             --s3-bucket ${{ env.project_name }} \
-            --capabilities CAPABILITY_IAM
+            --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
         working-directory: ${{ env.server_directory }}
       - name: Get API Gateway URL
         run: |
