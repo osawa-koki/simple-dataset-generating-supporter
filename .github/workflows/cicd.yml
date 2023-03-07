@@ -120,11 +120,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      # ★ 機密情報を扱う際にOutputsを使用すると空文字になるため、二度手間になってしまうが、、、
       - name: Get API Gateway URL
         run: |
           API_GATEWAY_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.project_name }} --query "Stacks[0].Outputs[?OutputKey=='${{ env.api_gateway_name }}'].OutputValue" --output text --no-cli-pager)
           echo "API_GATEWAY_URL=$API_GATEWAY_URL" >> $GITHUB_ENV
+      # ★ 機密情報を扱う際にOutputsを使用すると空文字になるため、二度手間になってしまうが、、、
       - name: API Gateway URL empty guard
         run: |
           echo "API Gateway URL -> ${{ env.API_GATEWAY_URL }}"
