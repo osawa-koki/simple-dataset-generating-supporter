@@ -18,6 +18,30 @@ Resources:
       VersioningConfiguration:
         Status: Enabled
 
+  MyLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: simple-dataset-generating-supporter-lambda-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: simple-dataset-generating-supporter-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                Resource: !Sub 'arn:aws:s3:::${MyBucket}/*'
+
   PingFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -43,6 +67,7 @@ Resources:
     Properties:
       FunctionName: simple-dataset-generating-supporter-post
       PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
         Command: [ "app.post" ]
       Architectures:
