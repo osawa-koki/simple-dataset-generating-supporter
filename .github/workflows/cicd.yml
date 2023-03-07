@@ -194,6 +194,7 @@ jobs:
           api-gateway-url: ${{ env.API_GATEWAY_URL }}
         run: |
           echo "NEXT_PUBLIC_LAMBDA_API_URL=${{ env.API_GATEWAY_URL }}" >> .env.local
+        working-directory: ${{ env.client_directory }}
       - name: My Debug # デバグ用コード
         env:
           api-gateway-url: ${{ env.API_GATEWAY_URL }}
