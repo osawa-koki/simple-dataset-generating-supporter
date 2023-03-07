@@ -64,7 +64,7 @@ jobs:
         working-directory: ${{ env.server_directory }}
       - name: Get API Gateway URL
         run: |
-          API_GATEWAY_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.project_name }} --query "Stacks[0].Outputs[?OutputKey=='YourInfoApi'].OutputValue" --output text --no-cli-pager)
+          API_GATEWAY_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.project_name }} --query "Stacks[0].Outputs[?OutputKey=='PingFunctionApi'].OutputValue" --output text --no-cli-pager)
           echo "API_GATEWAY_URL=$API_GATEWAY_URL" >> $GITHUB_ENV
       - name: Cat API Gateway URL
         run: echo $API_GATEWAY_URL
