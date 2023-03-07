@@ -10,6 +10,14 @@ Globals:
     MemorySize: 128
 
 Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "simple-dataset-generating-supporter-${AWS::AccountId}"
+      AccessControl: Private
+      VersioningConfiguration:
+        Status: Enabled
+
   PingFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -25,6 +33,29 @@ Resources:
           Properties:
             Path: /ping
             Method: get
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
+  PostFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-post
+      PackageType: Image
+      ImageConfig:
+        Command: [ "app.post" ]
+      Architectures:
+        - x86_64
+      Events:
+        PingFunctionApi:
+          Type: Api
+          Properties:
+            Path: /image
+            Method: post
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./api
