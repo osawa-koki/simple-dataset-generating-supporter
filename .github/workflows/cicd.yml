@@ -98,8 +98,10 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn
+        working-directory: ${{ env.client_directory }}
       - name: Test
         run: yarn test
+        working-directory: ${{ env.client_directory }}
     outputs:
       test-status: ${{ job.status }}
   # Build job
@@ -161,7 +163,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
-        run: yarn
+        run: yarn install
+        working-directory: ${{ env.client_directory }}
       # - name: Generating .env.local
       #   run: |
       #     echo "${{ secrets.ENV_LOCAL }}" > .env.local
@@ -203,6 +206,7 @@ jobs:
           cat .env.local
       - name: Build with Next.js
         run: yarn build
+        working-directory: ${{ env.client_directory }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
