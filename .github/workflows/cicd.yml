@@ -180,7 +180,7 @@ jobs:
         env:
           api-gateway-url: ${{ env.API_GATEWAY_URL }}
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.API_GATEWAY_URL }}/your-info")
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.API_GATEWAY_URL }}/ping")
           if [ $response -eq 200 ]; then
             echo "Success"
           else
