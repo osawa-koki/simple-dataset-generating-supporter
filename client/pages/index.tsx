@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <Layout menu={false} footer={false}>
       <div id='Index'>
-        <h1>Hello Next.js 💓💓💓</h1>
+        <h1>🧩 Let&apos;s make dataset 🧩</h1>
         <img id='Logo' src={`${setting.basePath}/tako.png`} alt="Logo" />
         <div id="IndexLink">
         {
