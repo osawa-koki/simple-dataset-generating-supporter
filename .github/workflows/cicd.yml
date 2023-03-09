@@ -26,9 +26,14 @@ concurrency:
 jobs:
   lambda-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
           pip install -r ./tests/requirements.txt
@@ -91,13 +96,16 @@ jobs:
     # ★ Outputsで機密情報を扱うことはできない？
   nextjs-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: ${{ matrix.node-version }}
           cache: yarn
           cache-dependency-path: ./**/yarn.lock
       - name: Install dependencies
