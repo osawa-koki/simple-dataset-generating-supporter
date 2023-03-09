@@ -140,6 +140,30 @@ Resources:
       DockerContext: ./api
       DockerTag: python3.9-v1
 
+  DeleteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-delete
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.delete" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image/delete
+            Method: delete
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
