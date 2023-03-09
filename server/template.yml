@@ -82,7 +82,31 @@ Resources:
         MyApiGateway:
           Type: Api
           Properties:
-            Path: /image
+            Path: /image/list
+            Method: get
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
+  FetchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-fetch
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.getch" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image/fetch
             Method: get
       Environment:
         Variables:
@@ -106,7 +130,7 @@ Resources:
         MyApiGateway:
           Type: Api
           Properties:
-            Path: /image
+            Path: /image/upload
             Method: post
       Environment:
         Variables:
