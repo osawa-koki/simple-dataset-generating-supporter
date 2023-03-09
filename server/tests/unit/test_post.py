@@ -1,7 +1,7 @@
 import json
 import os
 import pytest
-from unittest import mock
+from unittest.mock import patch, MagicMock
 from moto import mock_s3
 from ...api import post
 from ...api import var
@@ -39,10 +39,10 @@ def test_lambda_handler_params(user_id, is_valid):
     }
 
     # S3リソースをモック化する
-    with mock.patch('boto3.resource') as mock_s3_resource:
-        mock_s3_bucket = mock.MagicMock()
+    with patch.object(post.boto3, 'resource') as mock_s3_resource:
+        mock_s3_bucket = MagicMock()
         mock_s3_resource.return_value.Bucket.return_value = mock_s3_bucket
-        with mock.patch.object(mock_s3_bucket, 'put_object', mock.MagicMock()):
+        with patch.object(mock_s3_bucket, 'put_object', MagicMock()):
             # リクエストボディの内容に応じて、正しいレスポンスが返ってくることを確認する
             ret = post.lambda_handler(event, "")
             if is_valid:
