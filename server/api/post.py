@@ -78,7 +78,7 @@ def lambda_handler(event, context):
     try:
         # guidを生成してS3にデータを保存する
         guid = str(uuid.uuid4())
-        key = f"/image/{user_id}/{guid}"
+        key = f"image/{user_id}/{guid}.png"
         bucket = s3.Bucket(var.bucket_name)
         bucket.put_object(Key=key, Body=decoded_data)
     except Exception as ex:
