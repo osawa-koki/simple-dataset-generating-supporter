@@ -335,6 +335,15 @@ def delete(event, _):
             })
         }
 
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            'message': 'Successfully deleted data from S3',
+            'error': None,
+            'detail': None,
+        })
+    }
+
 def truncate(event, _):
     """画像を全て削除する
 
