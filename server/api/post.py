@@ -8,9 +8,10 @@ import boto3
 
 from . import var
 
+s3 = boto3.resource('s3')
+
 def lambda_handler(event, context):
-    s3 = boto3.resource('s3')
-    
+
     try:
         # 受け取ったJSON形式のデータから必要な値を取り出す
         data = json.loads(event['body'])

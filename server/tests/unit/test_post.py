@@ -39,9 +39,9 @@ def test_lambda_handler_params(user_id, is_valid):
     }
 
     # S3リソースをモック化する
-    with patch.object(post.boto3, 'resource') as mock_s3_resource:
-        mock_s3_bucket = MagicMock()
-        mock_s3_resource.return_value.Bucket.return_value = mock_s3_bucket
+    with patch.object(post.s3, 'Bucket') as mock_s3_bucket:
+        # モック化したS3リソースのオブジェクトを返すようにする
+        mock_s3_bucket.return_value = MagicMock()
         # リクエストボディの内容に応じて、正しいレスポンスが返ってくることを確認する
         ret = post.lambda_handler(event, "")
         if is_valid:
