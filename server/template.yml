@@ -13,7 +13,7 @@ Resources:
   MyBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "simple-dataset-generating-supporter-${AWS::AccountId}"
+      BucketName: "simple-dataset-generating-supporter-image"
       AccessControl: Private
       VersioningConfiguration:
         Status: Enabled
@@ -69,7 +69,7 @@ Resources:
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
-        Command: [ "app.post" ]
+        Command: [ "post.lambda_handler" ]
       Architectures:
         - x86_64
       Events:
