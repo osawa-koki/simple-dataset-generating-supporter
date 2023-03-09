@@ -22,6 +22,61 @@ def ping(_event, _context):
         ),
     }
 
+def get(event, _):
+    """画像を取得する
+    """
+
+    try:
+        # 受け取ったパスパラメータから必要な値を取り出す
+        query_params = event['pathParameters']
+        user_id = query_params['user_id']
+        since = query_params['since']
+        per_page = query_params['per_page']
+    except Exception as ex:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid request body',
+                'error': 'InvalidRequestError',
+                'detail': str(ex),
+            })
+        }
+
+    # user_idの形式が正しいかどうかを確認する
+    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid user_id',
+                'error': 'InvalidUserIdError',
+                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            })
+        }
+
+    # S3から画像を取得する
+    try:
+        image = bucket.Object(f'{user_id}.png').get()['Body'].read()
+    except Exception as ex:
+        return {
+            'statusCode': 404,
+            'body': json.dumps({
+                'message': 'Not found',
+                'error': 'NotFoundError',
+                'detail': str(ex),
+            })
+        }
+
+    # 画像をBASE64エンコードする
+    encoded_image = base64.b64encode(image).decode()
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            'image': encoded_image,
+        }),
+        'isBase64Encoded': True,
+    }
+
 def post(event, _):
     """画像を受け取り、S3に保存する
 
