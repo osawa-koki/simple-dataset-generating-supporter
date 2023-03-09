@@ -117,13 +117,13 @@ def fetch(event, _):
 
     # guidの形式が正しいかどうかを確認する
     for guid in guids:
-        if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', guid):
+        if not re.match(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$', guid):
             return {
                 'statusCode': 400,
                 'body': json.dumps({
                     'message': 'Invalid guid',
                     'error': 'InvalidGuidError',
-                    'detail': 'guid must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                    'detail': 'guid must be in the format of 8-4-4-4-12 hexadecimal characters',
                 })
             }
 
