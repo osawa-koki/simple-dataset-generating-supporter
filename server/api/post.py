@@ -6,7 +6,7 @@ import uuid
 from PIL import Image
 import boto3
 
-import var
+from . import var
 
 s3 = boto3.resource('s3')
 
@@ -27,7 +27,7 @@ def lambda_handler(event, context):
         }
 
     # user_idの形式が正しいかどうかを確認する
-    if not re.match(r'^[a-zA-Z0-9_-]{3,}$', user_id):
+    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
         return {
             'statusCode': 400,
             'body': json.dumps({
