@@ -1,6 +1,8 @@
 import base64
 import io
 import json
+import re
+import uuid
 from PIL import Image
 import boto3
 import os
@@ -12,7 +14,7 @@ def lambda_handler(event, context):
     try:
         # 受け取ったJSON形式のデータから必要な値を取り出す
         data = json.loads(event['body'])
-        object_key = data['key']
+        user_id = data['user_id']
         encoded_data = data['image']
     except Exception as ex:
         return {
@@ -21,6 +23,17 @@ def lambda_handler(event, context):
                 'message': 'Invalid request body',
                 'error': 'InvalidRequestError',
                 'detail': str(ex),
+            })
+        }
+
+    # user_idの形式が正しいかどうかを確認する
+    if not re.match(r'^[a-zA-Z0-9_-]{3,}$', user_id):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid user_id',
+                'error': 'InvalidUserIdError',
+                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
             })
         }
 
@@ -59,9 +72,11 @@ def lambda_handler(event, context):
         }
 
     try:
-        # S3にデータを保存する
+        # guidを生成してS3にデータを保存する
+        guid = str(uuid.uuid4())
+        key = f"/image/{user_id}/{guid}"
         bucket = s3.Bucket(bucket_name)
-        bucket.put_object(Key=object_key, Body=decoded_data)
+        bucket.put_object(Key=key, Body=decoded_data)
     except Exception as ex:
         return {
             'statusCode': 500,
