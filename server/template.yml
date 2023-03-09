@@ -62,6 +62,30 @@ Resources:
       DockerContext: ./api
       DockerTag: python3.9-v1
 
+  ListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-list
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.list" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image
+            Method: get
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
   PostFunction:
     Type: AWS::Serverless::Function
     Properties:
