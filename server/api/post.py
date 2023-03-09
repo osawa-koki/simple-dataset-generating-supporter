@@ -77,5 +77,6 @@ def lambda_handler(event, context):
         'body': json.dumps({
             'message': 'Successfully saved data to S3',
             'error': None,
+            'detail': None,
         })
     }
