@@ -38,9 +38,8 @@ def test_lambda_handler_params(user_id, is_valid):
     }
 
     # リクエストボディの内容に応じて、正しいレスポンスが返ってくることを確認する
+    ret = post.lambda_handler(event, "")
     if is_valid:
-        ret = post.lambda_handler(event, "")
         assert ret["statusCode"] == 200
     else:
-        ret = post.lambda_handler(event, "")
         assert ret["statusCode"] == 400
