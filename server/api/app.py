@@ -6,6 +6,16 @@ import uuid
 from PIL import Image
 import boto3
 
+# 固定数の定義
+IMAGE_SIZE = 128
+IMAGE_FORMAT = 'PNG'
+QUERY_STRING_PARAMETERS = 'queryStringParameters'
+USER_ID = 'user_id'
+GUID = 'guid'
+GUIDS = 'guids'
+USER_ID_REGEX = r'^[a-zA-Z0-9_-]{3,8}$'
+GUID_REGEX = r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
 # BUCKET_NAME環境変数からバケット名を取得する
 bucket_name = "simple-dataset-generating-supporter-image"
 s3 = boto3.resource('s3')
@@ -29,8 +39,8 @@ def list(event, _):
 
     try:
         # 受け取ったパスパラメータから必要な値を取り出す
-        query_params = event['queryStringParameters']
-        user_id = query_params['user_id']
+        query_params = event[QUERY_STRING_PARAMETERS]
+        user_id = query_params[USER_ID]
     except Exception as ex:
         return {
             'statusCode': 400,
@@ -42,7 +52,7 @@ def list(event, _):
         }
 
     # user_idの形式が正しいかどうかを確認する
-    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+    if not re.match(USER_ID_REGEX, user_id):
         return {
             'statusCode': 400,
             'body': json.dumps({
@@ -70,9 +80,9 @@ def fetch(event, _):
 
     try:
         # 受け取ったクエリパラメータから必要な値を取り出す
-        path_params = event['queryStringParameters']
-        user_id = path_params['user_id']
-        guids = path_params['guids'].split(',')
+        path_params = event[QUERY_STRING_PARAMETERS]
+        user_id = path_params[USER_ID]
+        guids = path_params[GUIDS].split(',')
     except Exception as ex:
         return {
             'statusCode': 400,
@@ -106,7 +116,7 @@ def fetch(event, _):
         }
 
     # user_idの形式が正しいかどうかを確認する
-    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+    if not re.match(USER_ID_REGEX, user_id):
         return {
             'statusCode': 400,
             'body': json.dumps({
@@ -118,7 +128,7 @@ def fetch(event, _):
 
     # guidの形式が正しいかどうかを確認する
     for guid in guids:
-        if not re.match(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$', guid):
+        if not re.match(GUID_REGEX, guid):
             return {
                 'statusCode': 400,
                 'body': json.dumps({
@@ -171,7 +181,7 @@ def post(event, _):
     try:
         # 受け取ったJSON形式のデータから必要な値を取り出す
         data = json.loads(event['body'])
-        user_id = data['user_id']
+        user_id = data[USER_ID]
         encoded_data = data['image']
     except Exception as ex:
         return {
@@ -184,7 +194,7 @@ def post(event, _):
         }
 
     # user_idの形式が正しいかどうかを確認する
-    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+    if not re.match(USER_ID_REGEX, user_id):
         return {
             'statusCode': 400,
             'body': json.dumps({
@@ -221,7 +231,7 @@ def post(event, _):
         }
 
     # 画像のフォーマットがpngであることを確認する
-    if image.format != 'PNG':
+    if image.format != IMAGE_FORMAT:
         return {
             'statusCode': 400,
             'body': json.dumps({
@@ -233,7 +243,7 @@ def post(event, _):
 
     # 画像のサイズが128x128であることを確認する
     width, height = image.size
-    if width != 128 or height != 128:
+    if width != IMAGE_SIZE or height != IMAGE_SIZE:
         return {
             'statusCode': 400,
             'body': json.dumps({
@@ -286,9 +296,9 @@ def delete(event, _):
 
     try:
         # クエリパラメータから必要な値を取り出す
-        query_params = event['queryStringParameters']
-        user_id = query_params['user_id']
-        guid = query_params['guid']
+        query_params = event[QUERY_STRING_PARAMETERS]
+        user_id = query_params[USER_ID]
+        guid = query_params[GUID]
     except Exception as ex:
         return {
             'statusCode': 400,
@@ -300,7 +310,7 @@ def delete(event, _):
         }
 
     # user_idの形式が正しいかどうかを確認する
-    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+    if not re.match(USER_ID_REGEX, user_id):
         return {
             'statusCode': 400,
             'body': json.dumps({
@@ -311,7 +321,7 @@ def delete(event, _):
         }
 
     # guidの形式が正しいかどうかを確認する
-    if not re.match(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$', guid):
+    if not re.match(GUID_REGEX, guid):
         return {
             'statusCode': 400,
             'body': json.dumps({
@@ -362,8 +372,8 @@ def truncate(event, _):
 
     try:
         # クエリパラメータから必要な値を取り出す
-        query_params = event['queryStringParameters']
-        user_id = query_params['user_id']
+        query_params = event[QUERY_STRING_PARAMETERS]
+        user_id = query_params[USER_ID]
     except Exception as ex:
         return {
             'statusCode': 400,
@@ -375,7 +385,7 @@ def truncate(event, _):
         }
 
     # user_idの形式が正しいかどうかを確認する
-    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+    if not re.match(USER_ID_REGEX, user_id):
         return {
             'statusCode': 400,
             'body': json.dumps({
