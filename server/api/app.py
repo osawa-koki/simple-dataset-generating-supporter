@@ -28,7 +28,7 @@ def list(event, _):
 
     try:
         # 受け取ったパスパラメータから必要な値を取り出す
-        query_params = event['pathParameters']
+        query_params = event['queryStringParameters']
         user_id = query_params['user_id']
     except Exception as ex:
         return {
