@@ -266,3 +266,71 @@ def post(event, _):
             'detail': None,
         })
     }
+
+def delete(event, _):
+    """画像を削除する
+
+    Parameters
+    ----------
+    event : dict
+        Lambdaのイベントオブジェクト
+        {
+            "queryStringParameters": {
+                "user_id": "string",
+                "guid": "string",
+            }
+        }
+    _ : object
+        Lambdaのコンテキストオブジェクト
+    """
+
+    try:
+        # クエリパラメータから必要な値を取り出す
+        query_params = event['queryStringParameters']
+        user_id = query_params['user_id']
+        guid = query_params['guid']
+    except Exception as ex:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid request path',
+                'error': 'InvalidRequestError',
+                'detail': str(ex),
+            })
+        }
+
+    # user_idの形式が正しいかどうかを確認する
+    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid user_id',
+                'error': 'InvalidUserIdError',
+                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            })
+        }
+
+    # guidの形式が正しいかどうかを確認する
+    if not re.match(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$', guid):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid guid',
+                'error': 'InvalidGuidError',
+                'detail': 'guid must be in the format of 8-4-4-4-12 hexadecimal characters',
+            })
+        }
+
+    # S3から画像を削除する
+    try:
+        key = f"image/{user_id}/{guid}.png"
+        bucket.delete_object(Key=key)
+    except Exception as ex:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'message': 'Failed to delete data from S3',
+                'error': 'S3Error',
+                'detail': str(ex),
+            })
+        }
