@@ -132,7 +132,7 @@ def fetch(event, _):
     images_failed = []
     try:
         for guid in guids:
-            key = f'image/{user_id}/{guid}'
+            key = f'image/{user_id}/{guid}.png'
             obj = bucket.Object(key)
             body = obj.get()['Body'].read()
             images.append({
