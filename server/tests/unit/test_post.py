@@ -4,7 +4,6 @@ import pytest
 from unittest.mock import patch, MagicMock
 from moto import mock_s3
 from ...api import post
-from ...api import var
 
 # ユーザ名は3文字以上8文字以下で、半角英数字、ハイフン、アンダースコアのみを許可する
 @pytest.mark.parametrize(
