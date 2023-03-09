@@ -42,10 +42,9 @@ def test_lambda_handler_params(user_id, is_valid):
     with patch.object(post.boto3, 'resource') as mock_s3_resource:
         mock_s3_bucket = MagicMock()
         mock_s3_resource.return_value.Bucket.return_value = mock_s3_bucket
-        with patch.object(mock_s3_bucket, 'put_object', MagicMock()):
-            # リクエストボディの内容に応じて、正しいレスポンスが返ってくることを確認する
-            ret = post.lambda_handler(event, "")
-            if is_valid:
-                assert ret["statusCode"] == 200
-            else:
-                assert ret["statusCode"] == 400
+        # リクエストボディの内容に応じて、正しいレスポンスが返ってくることを確認する
+        ret = post.lambda_handler(event, "")
+        if is_valid:
+            assert ret["statusCode"] == 200
+        else:
+            assert ret["statusCode"] == 400
