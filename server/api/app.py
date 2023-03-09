@@ -334,7 +334,7 @@ def delete(event, _):
     # S3から画像を削除する
     try:
         key = f"image/{user_id}/{guid}.png"
-        bucket.delete_object(Key=key)
+        s3.Object(bucket_name, key).delete()
     except Exception as ex:
         return {
             'statusCode': 500,
