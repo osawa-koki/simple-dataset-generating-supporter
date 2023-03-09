@@ -5,9 +5,9 @@ import re
 import uuid
 from PIL import Image
 import boto3
-import os
 
-bucket_name = os.environ.get('BUCKET_NAME')
+import var
+
 s3 = boto3.resource('s3')
 
 def lambda_handler(event, context):
@@ -79,7 +79,7 @@ def lambda_handler(event, context):
         # guidを生成してS3にデータを保存する
         guid = str(uuid.uuid4())
         key = f"/image/{user_id}/{guid}"
-        bucket = s3.Bucket(bucket_name)
+        bucket = s3.Bucket(var.bucket_name)
         bucket.put_object(Key=key, Body=decoded_data)
     except Exception as ex:
         return {
