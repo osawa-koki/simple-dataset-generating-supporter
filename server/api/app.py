@@ -11,9 +11,11 @@ IMAGE_SIZE = 128
 IMAGE_FORMAT = 'PNG'
 QUERY_STRING_PARAMETERS = 'queryStringParameters'
 USER_ID = 'user_id'
+CATEGORY = 'category'
 GUID = 'guid'
 GUIDS = 'guids'
 USER_ID_REGEX = r'^[a-zA-Z0-9_-]{3,8}$'
+CATEGORY_REGEX = r'^[a-zA-Z0-9_-]{3,8}$'
 GUID_REGEX = r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
 
 # BUCKET_NAME環境変数からバケット名を取得する
@@ -82,6 +84,7 @@ def fetch(event, _):
         # 受け取ったクエリパラメータから必要な値を取り出す
         path_params = event[QUERY_STRING_PARAMETERS]
         user_id = path_params[USER_ID]
+        category = path_params[CATEGORY]
         guids = path_params[GUIDS].split(',')
     except Exception as ex:
         return {
@@ -126,6 +129,17 @@ def fetch(event, _):
             })
         }
 
+    # categoryの形式が正しいかどうかを確認する
+    if not re.match(CATEGORY_REGEX, category):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid category',
+                'error': 'InvalidCategoryError',
+                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            })
+        }
+
     # guidの形式が正しいかどうかを確認する
     for guid in guids:
         if not re.match(GUID_REGEX, guid):
@@ -143,7 +157,7 @@ def fetch(event, _):
     images_failed = []
     try:
         for guid in guids:
-            key = f'image/{user_id}/{guid}.png'
+            key = f'image/{user_id}/{category}/{guid}.png'
             obj = bucket.Object(key)
             body = obj.get()['Body'].read()
             images.append({
@@ -171,6 +185,7 @@ def post(event, _):
         {
             "body": {
                 "user_id": "string",
+                "category": "string",
                 "image": "string",
             }
         }
@@ -182,6 +197,7 @@ def post(event, _):
         # 受け取ったJSON形式のデータから必要な値を取り出す
         data = json.loads(event['body'])
         user_id = data[USER_ID]
+        category = data[CATEGORY]
         encoded_data = data['image']
     except Exception as ex:
         return {
@@ -201,6 +217,17 @@ def post(event, _):
                 'message': 'Invalid user_id',
                 'error': 'InvalidUserIdError',
                 'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            })
+        }
+
+    # categoryの形式が正しいかどうかを確認する
+    if not re.match(CATEGORY_REGEX, category):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid category',
+                'error': 'InvalidCategoryError',
+                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
             })
         }
 
@@ -256,7 +283,7 @@ def post(event, _):
     # guidを生成してS3にデータを保存する
     try:
         guid = str(uuid.uuid4())
-        key = f"image/{user_id}/{guid}.png"
+        key = f"image/{user_id}/{category}/{guid}.png"
         bucket.put_object(Key=key, Body=decoded_data)
     except Exception as ex:
         return {
@@ -287,6 +314,7 @@ def delete(event, _):
         {
             "queryStringParameters": {
                 "user_id": "string",
+                "category": "string",
                 "guid": "string",
             }
         }
@@ -298,6 +326,7 @@ def delete(event, _):
         # クエリパラメータから必要な値を取り出す
         query_params = event[QUERY_STRING_PARAMETERS]
         user_id = query_params[USER_ID]
+        category = query_params[CATEGORY]
         guid = query_params[GUID]
     except Exception as ex:
         return {
@@ -320,6 +349,17 @@ def delete(event, _):
             })
         }
 
+    # categoryの形式が正しいかどうかを確認する
+    if not re.match(CATEGORY_REGEX, category):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid category',
+                'error': 'InvalidCategoryError',
+                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            })
+        }
+
     # guidの形式が正しいかどうかを確認する
     if not re.match(GUID_REGEX, guid):
         return {
@@ -333,7 +373,7 @@ def delete(event, _):
 
     # S3から画像を削除する
     try:
-        key = f"image/{user_id}/{guid}.png"
+        key = f"image/{user_id}/{category}/{guid}.png"
         s3.delete_object(Bucket=bucket_name, Key=key)
     except Exception as ex:
         return {
@@ -364,6 +404,7 @@ def truncate(event, _):
         {
             "queryStringParameters": {
                 "user_id": "string",
+                "category": "string",
             }
         }
     _ : object
@@ -374,6 +415,7 @@ def truncate(event, _):
         # クエリパラメータから必要な値を取り出す
         query_params = event[QUERY_STRING_PARAMETERS]
         user_id = query_params[USER_ID]
+        category = query_params[CATEGORY]
     except Exception as ex:
         return {
             'statusCode': 400,
@@ -395,9 +437,11 @@ def truncate(event, _):
             })
         }
 
+    # categoryの形式が正しいかどうかを確認する
+
     # S3から画像を削除する
     try:
-        key = f"image/{user_id}/"
+        key = f"image/{user_id}/{category}/"
         bucket.objects.filter(Prefix=key).delete()
     except Exception as ex:
         return {
