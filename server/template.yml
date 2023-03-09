@@ -40,7 +40,7 @@ Resources:
                   - s3:PutObject
                   - s3:DeleteObject
                   - s3:ListBucket
-                Resources:
+                Resource:
                   - !Sub "arn:aws:s3:::${MyBucket}/*"
                   - !Sub "arn:aws:s3:::${MyBucket}"
 
