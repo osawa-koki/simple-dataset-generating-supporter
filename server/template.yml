@@ -99,7 +99,7 @@ Resources:
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
-        Command: [ "app.getch" ]
+        Command: [ "app.fetch" ]
       Architectures:
         - x86_64
       Events:
