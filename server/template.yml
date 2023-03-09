@@ -41,9 +41,6 @@ Resources:
                   - s3:DeleteObject
                   - s3:ListBucket
                 Resource: !Sub "arn:aws:s3:::${MyBucket}/*"
-              - Effect: Allow
-                Action: s3:ListBucket
-                Resource: !Sub "arn:aws:s3:::${MyBucket}"
 
   PingFunction:
     Type: AWS::Serverless::Function
