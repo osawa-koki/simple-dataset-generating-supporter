@@ -63,6 +63,17 @@ def lambda_handler(event, context):
             })
         }
 
+    # 画像のフォーマットがpngであることを確認する
+    if image.format != 'PNG':
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid image format',
+                'error': 'InvalidImageFormatError',
+                'detail': 'image format must be png',
+            })
+        }
+
     # 画像のサイズが128x128であることを確認する
     width, height = image.size
     if width != 128 or height != 128:
