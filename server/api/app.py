@@ -10,10 +10,9 @@ bucket_name = "simple-dataset-generating-supporter-image"
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(bucket_name)
 
-def ping(event, context):
+def ping(_event, _context):
     """意思疎通を確認するためのAPI
     """
-
     return {
         "statusCode": 200,
         "body": json.dumps(
