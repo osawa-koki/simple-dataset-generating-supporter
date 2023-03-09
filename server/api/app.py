@@ -63,6 +63,93 @@ def list(event, _):
         })
     }
 
+def fetch(event, _):
+    """画像を取得する
+    """
+
+    try:
+        # 受け取ったクエリパラメータから必要な値を取り出す
+        path_params = event['queryStringParameters']
+        user_id = path_params['user_id']
+        guids = path_params['guids'].split(',')
+    except Exception as ex:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid request body',
+                'error': 'InvalidRequestError',
+                'detail': str(ex),
+            })
+        }
+
+    # guidが1つ以上あるかどうかを確認する
+    if len(guids) == 0:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'guids must be one or more',
+                'error': 'InvalidGuidsError',
+                'detail': 'guids must be one or more',
+            })
+        }
+
+    # guidが30個以下かどうかを確認する
+    if len(guids) > 30:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'guids must be 30 or less',
+                'error': 'InvalidGuidsError',
+                'detail': 'guids must be 30 or less',
+            })
+        }
+
+    # user_idの形式が正しいかどうかを確認する
+    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid user_id',
+                'error': 'InvalidUserIdError',
+                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            })
+        }
+
+    # guidの形式が正しいかどうかを確認する
+    for guid in guids:
+        if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', guid):
+            return {
+                'statusCode': 400,
+                'body': json.dumps({
+                    'message': 'Invalid guid',
+                    'error': 'InvalidGuidError',
+                    'detail': 'guid must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                })
+            }
+
+    # S3から画像を取得する
+    images = []
+    images_failed = []
+    try:
+        for guid in guids:
+            key = f'image/{user_id}/{guid}'
+            obj = bucket.Object(key)
+            body = obj.get()['Body'].read()
+            images.append({
+                'key': key,
+                'image': base64.b64encode(body).decode('utf-8'),
+            })
+    except Exception as ex:
+        images_failed.append(guid)
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            'images': images,
+            'images_failed': images_failed,
+        }),
+    }
+
 def post(event, _):
     """画像を受け取り、S3に保存する
 
