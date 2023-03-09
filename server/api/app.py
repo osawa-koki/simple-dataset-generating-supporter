@@ -23,6 +23,21 @@ def ping(_event, _context):
     }
 
 def post(event, _):
+    """画像を受け取り、S3に保存する
+
+    Parameters
+    ----------
+    event : dict
+        Lambdaのイベントオブジェクト
+        {
+            "body": {
+                "user_id": "string",
+                "image": "string",
+            }
+        }
+    _ : object
+        Lambdaのコンテキストオブジェクト
+    """
 
     try:
         # 受け取ったJSON形式のデータから必要な値を取り出す
