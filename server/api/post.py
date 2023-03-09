@@ -1,13 +1,14 @@
 import base64
 import json
 import boto3
+import os
 
+bucket_name = os.environ.get('BUCKET_NAME')
 s3 = boto3.resource('s3')
 
 def lambda_handler(event, context):
     # 受け取ったJSON形式のデータから必要な値を取り出す
     data = json.loads(event['body'])
-    bucket_name = 'simple-dataset-generating-supporter-image'
     object_key = data['key']
     encoded_data = data['image']
 
