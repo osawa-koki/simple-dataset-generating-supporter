@@ -10,7 +10,7 @@ from . import var
 
 s3 = boto3.resource('s3')
 
-def lambda_handler(event, context):
+def lambda_handler(event, _):
 
     try:
         # 受け取ったJSON形式のデータから必要な値を取り出す
