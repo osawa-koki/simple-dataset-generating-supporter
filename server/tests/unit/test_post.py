@@ -19,7 +19,7 @@ from ...api import post
         ("aaaaaaaaa", False),
     ]
 )
-def test_lambda_handler_is_valid(user_id, is_valid):
+def test_lambda_handler_params(user_id, is_valid):
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(current_dir, "valid_image.txt")
