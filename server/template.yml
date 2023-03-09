@@ -48,7 +48,7 @@ Resources:
       FunctionName: simple-dataset-generating-supporter-ping
       PackageType: Image
       ImageConfig:
-        Command: [ "main.ping_handler" ]
+        Command: [ "ping.lambda_handler" ]
       Architectures:
         - x86_64
       Events:
@@ -69,7 +69,7 @@ Resources:
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
-        Command: [ "main.post_handler" ]
+        Command: [ "post.lambda_handler" ]
       Architectures:
         - x86_64
       Events:
