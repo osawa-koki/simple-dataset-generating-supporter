@@ -50,8 +50,8 @@ def post(event, _):
             })
         }
 
+    # 受け取ったimageプロパティをBASE64デコードする
     try:
-        # 受け取ったimageプロパティをBASE64デコードする
         decoded_data = base64.b64decode(encoded_data)
     except Exception as ex:
         return {
@@ -99,8 +99,8 @@ def post(event, _):
             })
         }
 
+    # guidを生成してS3にデータを保存する
     try:
-        # guidを生成してS3にデータを保存する
         guid = str(uuid.uuid4())
         key = f"image/{user_id}/{guid}.png"
         bucket.put_object(Key=key, Body=decoded_data)
