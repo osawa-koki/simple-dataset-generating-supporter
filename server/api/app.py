@@ -10,7 +10,20 @@ bucket_name = "simple-dataset-generating-supporter-image"
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(bucket_name)
 
-def lambda_handler(event, _):
+def ping(event, context):
+    """意思疎通を確認するためのAPI
+    """
+
+    return {
+        "statusCode": 200,
+        "body": json.dumps(
+            {
+                "message": "hello world",
+            }
+        ),
+    }
+
+def post(event, _):
 
     try:
         # 受け取ったJSON形式のデータから必要な値を取り出す
