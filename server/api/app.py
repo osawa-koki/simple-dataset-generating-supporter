@@ -7,7 +7,7 @@ import uuid
 from PIL import Image
 import boto3
 
-bucket_name = os.environ['BUCKET_NAME']
+bucket_name = os.environ['MY_BUCKET_NAME']
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(bucket_name)
 
