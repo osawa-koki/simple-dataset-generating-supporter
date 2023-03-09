@@ -5,24 +5,19 @@ from unittest.mock import patch, MagicMock
 from moto import mock_s3
 from ...api import app
 
-# ユーザ名は3文字以上8文字以下で、半角英数字、ハイフン、アンダースコアのみを許可する
+# ユーザ名とカテゴリは3文字以上8文字以下で、半角英数字、ハイフン、アンダースコアのみを許可する
 @pytest.mark.parametrize(
-    "user_id, is_valid", [
-        ("", False),
-        ("a", False),
-        ("aa", False),
-        ("aaa", True),
-        ("aaaa", True),
-        ("aAa", True),
-        ("a-a", True),
-        ("a_a", True),
-        ("a a", False),
-        ("aあa", False),
-        ("aaaaaaaaa", False),
+    "user_id, category, is_valid", [
+        ("user", "category", True),
+        ("---", "___", True),
+        ("___", "---", True),
+        ("aaaaaaaa", "aaaaaaaa", True),
+        ("user", "category_xxxxx", False),
+        ("user_xxxxx", "category", False),
     ]
 )
 @mock_s3
-def test_lambda_handler_params(user_id, is_valid):
+def test_lambda_handler_params(user_id, category, is_valid):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(current_dir, "valid_image.txt")
     with open(file_path, "r") as f:
@@ -31,6 +26,7 @@ def test_lambda_handler_params(user_id, is_valid):
     # リクエストボディを作成する
     body = {
         "user_id": user_id,
+        "category": category,
         "image": image,
     }
     event = {
