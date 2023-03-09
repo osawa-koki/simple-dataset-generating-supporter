@@ -6,7 +6,7 @@ import uuid
 from PIL import Image
 import boto3
 
-from api import var
+from . import var
 
 s3 = boto3.resource('s3')
 
