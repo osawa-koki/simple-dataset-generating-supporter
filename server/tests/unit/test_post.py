@@ -3,7 +3,9 @@ import os
 import pytest
 from unittest.mock import MagicMock, patch
 from moto import mock_s3
+import boto3
 from ...api import post
+from ...api import var
 
 # ユーザ名は3文字以上8文字以下で、半角英数字、ハイフン、アンダースコアのみを許可する
 @pytest.mark.parametrize(
@@ -21,7 +23,10 @@ from ...api import post
         ("aaaaaaaaa", False),
     ]
 )
+@mock_s3
 def test_lambda_handler_params(user_id, is_valid):
+    # S3 クライアントのモックを作成
+    mock_s3_client = boto3.resource('s3')
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(current_dir, "valid_image.txt")
@@ -38,8 +43,9 @@ def test_lambda_handler_params(user_id, is_valid):
     }
 
     # リクエストボディの内容に応じて、正しいレスポンスが返ってくることを確認する
-    ret = post.lambda_handler(event, "")
-    if is_valid:
-        assert ret["statusCode"] == 200
-    else:
-        assert ret["statusCode"] == 400
+    with patch.object(mock_s3_client.Bucket(var.bucket_name), 'put_object', MagicMock()):
+        ret = post.lambda_handler(event, "")
+        if is_valid:
+            assert ret["statusCode"] == 200
+        else:
+            assert ret["statusCode"] == 400
