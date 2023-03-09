@@ -24,28 +24,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # lambda-test:
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       python-version: [3.9]
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-python@v4
-  #       with:
-  #         python-version: ${{ matrix.python-version }}
-  #     - name: Install dependencies
-  #       run: |
-  #         pip install -r ./tests/requirements.txt
-  #         pip install -r ./api/requirements.txt
-  #       working-directory: ${{ env.server_directory }}
-  #     - name: Test
-  #       run: pytest
-  #       working-directory: ${{ env.server_directory }}
-  #   outputs:
-  #     test-status: ${{ job.status }}
+  lambda-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install -r ./tests/requirements.txt
+          pip install -r ./api/requirements.txt
+        working-directory: ${{ env.server_directory }}
+      - name: Test
+        run: pytest
+        working-directory: ${{ env.server_directory }}
+    outputs:
+      test-status: ${{ job.status }}
   lambda-deploy:
-    #needs: lambda-test
+    needs: lambda-test
     if: ${{ needs.lambda-test.outputs.test-status == 'success' }}
     runs-on: ubuntu-latest
     steps:
