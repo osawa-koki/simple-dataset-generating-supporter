@@ -1,12 +1,13 @@
 import base64
 import io
 import json
+import os
 import re
 import uuid
 from PIL import Image
 import boto3
 
-bucket_name = "simple-dataset-generating-supporter-image"
+bucket_name = os.environ['BUCKET_NAME']
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(bucket_name)
 
