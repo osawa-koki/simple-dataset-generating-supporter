@@ -334,3 +334,67 @@ def delete(event, _):
                 'detail': str(ex),
             })
         }
+
+def truncate(event, _):
+    """画像を全て削除する
+
+    Parameters
+    ----------
+    event : dict
+        Lambdaのイベントオブジェクト
+        {
+            "queryStringParameters": {
+                "user_id": "string",
+            }
+        }
+    _ : object
+        Lambdaのコンテキストオブジェクト
+    """
+
+    try:
+        # クエリパラメータから必要な値を取り出す
+        query_params = event['queryStringParameters']
+        user_id = query_params['user_id']
+    except Exception as ex:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid request path',
+                'error': 'InvalidRequestError',
+                'detail': str(ex),
+            })
+        }
+
+    # user_idの形式が正しいかどうかを確認する
+    if not re.match(r'^[a-zA-Z0-9_-]{3,8}$', user_id):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid user_id',
+                'error': 'InvalidUserIdError',
+                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            })
+        }
+
+    # S3から画像を削除する
+    try:
+        key = f"image/{user_id}/"
+        bucket.objects.filter(Prefix=key).delete()
+    except Exception as ex:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'message': 'Failed to delete data from S3',
+                'error': 'S3Error',
+                'detail': str(ex),
+            })
+        }
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            'message': 'Successfully deleted data from S3',
+            'error': None,
+            'detail': None,
+        })
+    }
