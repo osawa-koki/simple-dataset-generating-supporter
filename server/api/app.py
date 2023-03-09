@@ -1,13 +1,13 @@
 import base64
 import io
 import json
-import os
 import re
 import uuid
 from PIL import Image
 import boto3
 
-bucket_name = os.environ['MY_BUCKET_NAME']
+# BUCKET_NAME環境変数からバケット名を取得する
+bucket_name = "simple-dataset-generating-supporter-image"
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(bucket_name)
 
