@@ -46,7 +46,7 @@ jobs:
   #     test-status: ${{ job.status }}
   lambda-deploy:
     #needs: lambda-test
-    if: ${{ needs.lambda-test.outputs.test-status == 'success' }}
+    #if: ${{ needs.lambda-test.outputs.test-status == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
