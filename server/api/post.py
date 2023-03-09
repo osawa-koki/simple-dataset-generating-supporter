@@ -68,7 +68,11 @@ def lambda_handler(event, context):
     if width != 128 or height != 128:
         return {
             'statusCode': 400,
-            'body': json.dumps({'message': 'Invalid image size', 'error': 'InvalidImageSizeError'})
+            'body': json.dumps({
+                'message': 'Invalid image size', 'error': 'InvalidImageSizeError',
+                'error': 'InvalidImageSizeError',
+                'detail': 'image size must be 128x128',
+            })
         }
 
     try:
