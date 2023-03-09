@@ -21,5 +21,8 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        'body': json.dumps({'message': 'Successfully saved data to S3'})
+        'body': json.dumps({
+            'message': 'Successfully saved data to S3',
+            'error': None,
+        })
     }
