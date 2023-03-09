@@ -1,6 +1,6 @@
 import json
 
-def ping(event, context):
+def lambda_handler(event, context):
     """意思疎通を確認するためのAPI
     """
 

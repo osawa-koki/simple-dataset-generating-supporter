@@ -48,7 +48,7 @@ Resources:
       FunctionName: simple-dataset-generating-supporter-ping
       PackageType: Image
       ImageConfig:
-        Command: [ "app.ping" ]
+        Command: [ "ping.lambda_handler" ]
       Architectures:
         - x86_64
       Events:

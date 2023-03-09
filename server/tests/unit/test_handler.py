@@ -1,9 +1,9 @@
 import json
-from ...api import app
+from ...api import ping
 
 def test_lambda_handler():
 
-    ret = app.ping({}, "")
+    ret = ping.lambda_handler({}, "")
     data = json.loads(ret["body"])
 
     assert ret["statusCode"] == 200
