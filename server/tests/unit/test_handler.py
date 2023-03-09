@@ -1,10 +1,7 @@
 import json
+from ...api import app
 
-import pytest
-
-from api import app
-
-def test_lambda_handler(apigw_event, mocker):
+def test_lambda_handler():
 
     ret = app.ping({}, "")
     data = json.loads(ret["body"])
