@@ -804,6 +804,11 @@
   dependencies:
     "@popperjs/core" "^2.9.2"
 
+"@types/fabric@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/@types/fabric/-/fabric-5.3.0.tgz#d1afb8f9132aadbeb4aa84219ea11672476ad569"
+  integrity sha512-HIsNsuvyQmsNi0+bT8Q7t5sC8g6e8xAdgZfO7S4HpeFKn0XK1BKrgdRjocM0hsB/vVVT/4M7IBPqqyvbF3Kl5g==
+
 "@types/graceful-fs@^4.1.3":
   version "4.1.6"
   resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.6.tgz#e14b2576a1c25026b7f02ede1de3b84c3a1efeae"
