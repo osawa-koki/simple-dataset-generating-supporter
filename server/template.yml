@@ -124,7 +124,7 @@ Resources:
   UploadFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: simple-dataset-generating-supporter-post
+      FunctionName: simple-dataset-generating-supporter-upload
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
