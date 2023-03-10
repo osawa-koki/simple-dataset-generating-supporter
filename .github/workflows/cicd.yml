@@ -142,6 +142,7 @@ jobs:
           git push "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY" "$GITHUB_REF"
         fi
   nextjs-lint:
+    needs: nextjs-prettify
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -159,7 +160,7 @@ jobs:
   nextjs-build:
     needs:
       - lambda-deploy
-      - nextjs-prettify
+      - nextjs-lint
     if: ${{ needs.nextjs-test.outputs.test-status == 'success' }}
     runs-on: ubuntu-latest
     steps:
