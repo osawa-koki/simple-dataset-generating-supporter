@@ -5,6 +5,7 @@ import { fabric } from "fabric";
 import Layout from "../components/Layout";
 
 import { DataContext } from "../src/DataContext";
+import setting from "../setting";
 
 const CANVAS_NAME = 'MyCanvas';
 const USER_ID_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
@@ -22,6 +23,32 @@ export default function ContactPage() {
     const canvas = new fabric.Canvas(CANVAS_NAME);
     setCanvas(canvas);
   }, []);
+
+  const Submit = useCallback(() => {
+    if (canvas === null) return;
+    const data = canvas.toDataURL();
+    const username = sharedData.username;
+    const category = sharedData.category;
+    console.log(setting);
+
+    fetch(`${setting.apiPath}/image/upload`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data,
+        username,
+        category,
+      }),
+    }).then((res) => {
+      if (res.status === 200) {
+        alert('送信しました。');
+      } else {
+        alert('送信に失敗しました。');
+      }
+    });
+  }, [canvas, sharedData]);
 
   const ClearCanvas = useCallback(() => {
     canvas.remove.apply(canvas, canvas.getObjects());
@@ -65,7 +92,7 @@ export default function ContactPage() {
           <canvas id={CANVAS_NAME} width={300} height={300} />
         </div>
         <div className="mt-5 d-flex justify-content-center">
-          <Button variant="primary" className="mx-3" disabled={is_valid(sharedData.username, sharedData.category) === false}>Submit 📨</Button>
+          <Button variant="primary" className="mx-3" disabled={is_valid(sharedData.username, sharedData.category) === false} onClick={Submit}>Submit 📨</Button>
           <Button variant="danger" className="mx-3" onClick={ClearCanvas}>Delete</Button>
         </div>
       </div>
