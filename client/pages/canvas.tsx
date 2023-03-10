@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Button, Alert, Form } from 'react-bootstrap';
 import { fabric } from "fabric";
@@ -18,10 +18,15 @@ export default function ContactPage() {
   const [canvas, setCanvas] = useState<any>(null);
   const { sharedData, setSharedData } = React.useContext(DataContext);
 
-  const ClearCanvas = () => {
+  useEffect(() => {
+    const canvas = new fabric.Canvas(CANVAS_NAME);
+    setCanvas(canvas);
+  }, []);
+
+  const ClearCanvas = useCallback(() => {
     canvas.remove.apply(canvas, canvas.getObjects());
     canvas.backgroundColor = 'white';
-  }
+  }, [canvas]);
 
   useEffect(() => {
     if (canvas === null) return;
@@ -30,12 +35,7 @@ export default function ContactPage() {
     canvas.freeDrawingBrush.color="black";
     canvas.isDrawingMode = true;
     ClearCanvas();
-  }, [canvas]);
-
-  useEffect(() => {
-    const canvas = new fabric.Canvas(CANVAS_NAME);
-    setCanvas(canvas);
-  }, []);
+  }, [ClearCanvas, canvas]);
 
   return (
     <Layout>
