@@ -26,10 +26,9 @@ export default function ContactPage() {
 
   const Submit = useCallback(() => {
     if (canvas === null) return;
-    const data = canvas.toDataURL();
+    const data = canvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
     const username = sharedData.username;
     const category = sharedData.category;
-
     fetch(`${setting.apiPath}/image/upload`, {
       method: 'POST',
       headers: {
