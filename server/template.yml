@@ -136,7 +136,7 @@ Resources:
           Type: Api
           Properties:
             Path: /image/upload
-            Method: post
+            Method: post, put, options
       Environment:
         Variables:
           MY_BUCKET_NAME: !Ref MyBucket
