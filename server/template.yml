@@ -121,7 +121,7 @@ Resources:
       DockerContext: ./api
       DockerTag: python3.9-v1
 
-  PostFunction:
+  UploadFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: simple-dataset-generating-supporter-post
@@ -136,7 +136,7 @@ Resources:
           Type: Api
           Properties:
             Path: /image/upload
-            Method: post, put, options
+            Method: post
       Environment:
         Variables:
           MY_BUCKET_NAME: !Ref MyBucket

@@ -175,7 +175,7 @@ def fetch(event, _):
         }),
     }
 
-def post(event, _):
+def upload(event, _):
     """画像を受け取り、S3に保存する
 
     Parameters
