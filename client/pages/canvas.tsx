@@ -7,6 +7,11 @@ import Layout from "../components/Layout";
 import { DataContext } from "../src/DataContext";
 
 const CANVAS_NAME = 'MyCanvas';
+const USER_ID_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
+const CATEGORY_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
+const is_valid = (username: string, category: string) => {
+  return USER_ID_REGEX.test(username) && CATEGORY_REGEX.test(category);
+}
 
 export default function ContactPage() {
 
@@ -55,12 +60,14 @@ export default function ContactPage() {
             }} />
           </Form.Group>
         </Form>
+        {(is_valid(sharedData.username, sharedData.category) === false) && <Alert variant="danger" className="mt-3">ユーザ名とカテゴリは半角英数字と記号(アンダースコアとハイフン)の3-8文字で入力してください。</Alert>}
         <div id="CanvasWrapper" className="mt-5">
           <canvas id={CANVAS_NAME} width={300} height={300} />
         </div>
-        <Button variant="primary" type="submit">
-          Submit
-        </Button>
+        <div className="mt-5 d-flex justify-content-center">
+          <Button variant="primary" className="mx-3" disabled={is_valid(sharedData.username, sharedData.category) === false}>Submit 📨</Button>
+          <Button variant="danger" className="mx-3" onClick={ClearCanvas}>Delete</Button>
+        </div>
       </div>
     </Layout>
   );
