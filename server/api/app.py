@@ -303,10 +303,9 @@ def post(event, _):
             'detail': None,
         }),
         'headers': {
-            'Access-Control-Allow-Origin': 'http://localhost:3000',
+            'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
             'Access-Control-Allow-Methods': 'GET,OPTIONS,POST,PUT,DELETE',
-            'Access-Control-Allow-Credentials': True,
         },
     }
 

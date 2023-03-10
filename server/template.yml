@@ -10,10 +10,9 @@ Globals:
     MemorySize: 128
   Api:
     Cors:
-      AllowOrigin: "'http://localhost:3000'"
+      AllowOrigin: "'*'"
       AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
       AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
-      AllowCredentials: true
 
 Resources:
   MyBucket:
