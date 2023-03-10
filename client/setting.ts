@@ -5,7 +5,7 @@ const setting = {
   isProd,
   basePath: Env.basePath,
   apiPath: isProd ? '' : 'http://localhost:8000',
-  title: '🧩 Let\'s make dataset! 🧩',
+  title: "🧩 Let's make dataset! 🧩",
 };
 
 export default setting;
