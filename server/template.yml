@@ -10,7 +10,7 @@ Globals:
     MemorySize: 128
   Api:
     Cors:
-      AllowOrigin: "'https://osawa-koki.github.io'"
+      AllowOrigin: "'https://osawa-koki.github.io,http://localhost:3000'"
       AllowMethods: "'*'"
       AllowHeaders: "'*'"
       AllowCredentials: true
