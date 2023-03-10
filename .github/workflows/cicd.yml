@@ -118,11 +118,43 @@ jobs:
         working-directory: ${{ env.client_directory }}
     outputs:
       test-status: ${{ job.status }}
+  nextjs-prettify:
+    needs:
+      - nextjs-test
+    if: ${{ needs.nextjs-test.outputs.test-status == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+          cache-dependency-path: ./**/yarn.lock
+      - name: Install dependencies
+        run: yarn
+        working-directory: ${{ env.client_directory }}
+      - name: Prettify
+        run: yarn pretty
+        working-directory: ${{ env.client_directory }}
+      - name: Commit
+        uses: EndBug/add-and-commit@v7
+        with:
+          message: "Prettify"
+          add: "."
+      - name: Push
+        uses:
+          EndBug/git-push@v7
+        with:
+          branch: ${{ github.ref }}
+          force: true
+          token: ${{ secrets.GITHUB_TOKEN }}
   # Build job
   nextjs-build:
     needs:
       - lambda-deploy
-      - nextjs-test
+      - nextjs-prettify
     if: ${{ needs.nextjs-test.outputs.test-status == 'success' }}
     runs-on: ubuntu-latest
     steps:
