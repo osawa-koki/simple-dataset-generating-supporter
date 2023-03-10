@@ -130,6 +130,7 @@ jobs:
         node-version: '18'
     - name: Install dependencies
       run: yarn install
+      working-directory: ${{ env.client_directory }}
     - name: Prettify code
       run: |
         yarn prettify --check
@@ -141,6 +142,7 @@ jobs:
           git commit -m "Prettify code with yarn prettify"
           git push "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY" "$GITHUB_REF"
         fi
+      working-directory: ${{ env.client_directory }}
   nextjs-lint:
     needs: nextjs-prettify
     runs-on: ubuntu-latest
@@ -153,8 +155,10 @@ jobs:
         node-version: '18'
     - name: Install dependencies
       run: yarn install
+      working-directory: ${{ env.client_directory }}
     - name: Lint code
       run: yarn lint
+      working-directory: ${{ env.client_directory }}
   # Build job
   nextjs-build:
     needs:
