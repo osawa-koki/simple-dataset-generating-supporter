@@ -128,7 +128,7 @@ Resources:
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
-        Command: [ "app.post" ]
+        Command: [ "app.upload" ]
       Architectures:
         - x86_64
       Events:
