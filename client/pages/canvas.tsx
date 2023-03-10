@@ -31,8 +31,8 @@ export default function ContactPage() {
   useEffect(() => {
     if (canvas === null) return;
     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-    canvas.freeDrawingBrush.width=10;
-    canvas.freeDrawingBrush.color="black";
+    canvas.freeDrawingBrush.width = 10;
+    canvas.freeDrawingBrush.color = "black";
     canvas.isDrawingMode = true;
     ClearCanvas();
   }, [ClearCanvas, canvas]);
