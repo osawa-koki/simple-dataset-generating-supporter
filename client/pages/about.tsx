@@ -10,7 +10,11 @@ export default function AboutPage() {
           機械学習用のデータセットを自作するためのサポートサイトです。<br />
           簡単に画像をお絵描きして、データセットを作成できます。<br />
           <br />
-          このプログラムは「S3」「Lambda」「GitHub Actions」および「Next.js」を使用しています。
+          このプログラムは「S3」「Lambda」「GitHub Actions」および「Next.js」を使用しています。<br />
+          クラウド(SaaS)は偉大だ！<br />
+          <br />
+          出回っているデータセットではなく、自分で作成したデータセットを使って機械学習を行て見たい方におすすめです。<br />
+          🐙🐙🐙
         </p>
       </div>
     </Layout>
