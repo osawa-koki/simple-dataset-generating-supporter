@@ -119,6 +119,7 @@ jobs:
     outputs:
       test-status: ${{ job.status }}
   nextjs-prettify:
+    needs: nextjs-test
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
