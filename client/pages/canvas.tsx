@@ -29,7 +29,6 @@ export default function ContactPage() {
     const data = canvas.toDataURL();
     const username = sharedData.username;
     const category = sharedData.category;
-    console.log(setting);
 
     fetch(`${setting.apiPath}/image/upload`, {
       method: 'POST',
