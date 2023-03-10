@@ -301,7 +301,12 @@ def post(event, _):
             'message': 'Successfully saved data to S3',
             'error': None,
             'detail': None,
-        })
+        }),
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Methods': '*',
+        },
     }
 
 def delete(event, _):
