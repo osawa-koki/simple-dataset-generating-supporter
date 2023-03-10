@@ -1,0 +1,10 @@
+
+#Canvas {
+  #CanvasWrapper {
+    display: flex;
+    justify-content: center;
+    #MyCanvas {
+      border: 1px lightgray solid;
+    }
+  }
+}
