@@ -38,7 +38,7 @@ def test_lambda_handler_params(user_id, category, is_valid):
         # モック化したS3リソースのオブジェクトを返すようにする
         mock_put_object.return_value = MagicMock()
         # リクエストボディの内容に応じて、正しいレスポンスが返ってくることを確認する
-        ret = app.post(event, "")
+        ret = app.upload(event, "")
         if is_valid:
             assert ret["statusCode"] == 200
         else:
