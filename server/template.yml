@@ -18,15 +18,6 @@ Resources:
       VersioningConfiguration:
         Status: Enabled
 
-  MyApiGateway:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: Prod
-      Cors:
-        AllowMethods: "'*'"
-        AllowHeaders: "'*'"
-        AllowOrigin: "'*'"
-
   MyLambdaRole:
     Type: AWS::IAM::Role
     Properties:
