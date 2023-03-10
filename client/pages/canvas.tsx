@@ -35,9 +35,32 @@ export default function ContactPage() {
   return (
     <Layout>
       <div id="Canvas">
-        <div id="CanvasWrapper">
+        <Form className="d-flex justify-content-between">
+          <Form.Group className="w-50">
+            <Form.Label>username</Form.Label>
+            <Form.Control type="text" placeholder="Enter User Name" value={sharedData.username} onInput={(e) => {
+              setSharedData({
+                ...sharedData,
+                username: e.currentTarget.value,
+              });
+            }} />
+          </Form.Group>
+          <Form.Group className="w-50">
+            <Form.Label>category</Form.Label>
+            <Form.Control type="text" placeholder="Enter Category" value={sharedData.category} onInput={(e) => {
+              setSharedData({
+                ...sharedData,
+                category: e.currentTarget.value,
+              });
+            }} />
+          </Form.Group>
+        </Form>
+        <div id="CanvasWrapper" className="mt-5">
           <canvas id={CANVAS_NAME} width={300} height={300} />
         </div>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
       </div>
     </Layout>
   );
