@@ -23,16 +23,8 @@ export default function GalleryPage() {
   const { sharedData, setSharedData } = useContext(DataContext);
 
   const Delete = (key: string) => {
-    fetch(`${setting.apiPath}/image/delete`, {
+    fetch(`${setting.apiPath}/image/delete?user_id=${sharedData.username}&category=${selected_category}&guid=${key}`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user_id: sharedData.username,
-        category: selected_category,
-        guid: key,
-      }),
     }).then(async (res) => {
       if (res.status === 200) {
         const new_images = images.filter((image) => image.key !== key);
