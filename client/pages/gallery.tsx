@@ -109,7 +109,7 @@ export default function GalleryPage() {
           )
         }
         {
-          images.length === 0 ? (
+          images.length === 0 && selected_category !== "" ? (
             <Alert variant="info" className="mt-3">画像がありません。</Alert>
           ) : (
             images.map((image) => (
