@@ -10,14 +10,24 @@ from ...api import app
 @pytest.mark.parametrize(
     "user_id, category, is_valid", [
         ("user", "category", True),
+        ("xxx", "x", True),
+        ("xxxxxxxxxxxxxxxx", "xxxxxxxx", True),
+        ("xxxxxxxxxxxxxxxxy", "xxxxxxxx", False),
+        ("xxxxxxxxxxxxxxxx", "xxxxxxxxy", False),
         ("", "category", False),
         ("user", "", False),
         ("x x", "category", False),
         ("user", "x x", False),
+        ("あああ", "category", False),
+        ("user", "あああ", False),
     ]
 )
 @mock_s3
 def test_lambda_handler_params(user_id, category, is_valid):
+    """
+    アップロード関数のパラメタに関するテスト
+    """
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(current_dir, "valid_image.txt")
     with open(file_path, "r") as f:
