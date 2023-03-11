@@ -16,9 +16,12 @@ USER_ID = 'user_id'
 CATEGORY = 'category'
 GUID = 'guid'
 GUIDS = 'guids'
-USER_ID_REGEX = r'^[a-zA-Z0-9_-]{3,8}$'
-CATEGORY_REGEX = r'^[a-zA-Z0-9_-]{3,8}$'
+USER_ID_REGEX = r'^[a-zA-Z0-9_-]{3,16}$'
+USER_ID_INVALID_MESSAGE = 'user_id must be 3 or more characters, 16 or less characters, and only contain alphanumeric characters, hyphens, and underscores'
+CATEGORY_REGEX = r'^[a-zA-Z0-9_-]{1,8}$'
+CATEGORY_INVALID_MESSAGE = 'category must be 1 or more characters, 8 or less characters, and only contain alphanumeric characters, hyphens, and underscores'
 GUID_REGEX = r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+GUID_INVALID_MESSAGE = 'guid must be UUID format'
 HEADERS = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -54,9 +57,7 @@ def list(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid request body',
-                'error': 'InvalidRequestError',
-                'detail': str(ex),
+                'message': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -66,9 +67,7 @@ def list(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid user_id',
-                'error': 'InvalidUserIdError',
-                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': USER_ID_INVALID_MESSAGE,
             }),
             'headers': HEADERS,
         }
@@ -100,9 +99,7 @@ def fetch(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid request body',
-                'error': 'InvalidRequestError',
-                'detail': str(ex),
+                'message': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -112,21 +109,17 @@ def fetch(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'guids must be one or more',
-                'error': 'InvalidGuidsError',
-                'detail': 'guids must be one or more',
+                'message': 'guids must be 1 or more',
             }),
             'headers': HEADERS,
         }
 
-    # guidが30個以下かどうかを確認する
-    if len(guids) > 30:
+    # guidが300個以下かどうかを確認する
+    if len(guids) > 300:
         return {
             'statusCode': 400,
             'body': json.dumps({
                 'message': 'guids must be 30 or less',
-                'error': 'InvalidGuidsError',
-                'detail': 'guids must be 30 or less',
             }),
             'headers': HEADERS,
         }
@@ -136,9 +129,7 @@ def fetch(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid user_id',
-                'error': 'InvalidUserIdError',
-                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': USER_ID_INVALID_MESSAGE,
             }),
             'headers': HEADERS,
         }
@@ -148,9 +139,7 @@ def fetch(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid category',
-                'error': 'InvalidCategoryError',
-                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': CATEGORY_INVALID_MESSAGE,
             }),
             'headers': HEADERS,
         }
@@ -161,9 +150,7 @@ def fetch(event, _):
             return {
                 'statusCode': 400,
                 'body': json.dumps({
-                    'message': 'Invalid guid',
-                    'error': 'InvalidGuidError',
-                    'detail': 'guid must be in the format of 8-4-4-4-12 hexadecimal characters',
+                    'message': GUID_INVALID_MESSAGE,
                 }),
             'headers': HEADERS,
             }
@@ -220,9 +207,7 @@ def upload(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid request body',
-                'error': 'InvalidRequestError',
-                'detail': str(ex),
+                'message': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -232,9 +217,7 @@ def upload(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid user_id',
-                'error': 'InvalidUserIdError',
-                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': USER_ID_INVALID_MESSAGE
             }),
             'headers': HEADERS,
         }
@@ -244,9 +227,7 @@ def upload(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid category',
-                'error': 'InvalidCategoryError',
-                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': CATEGORY_INVALID_MESSAGE
             }),
             'headers': HEADERS,
         }
@@ -259,8 +240,6 @@ def upload(event, _):
             'statusCode': 400,
             'body': json.dumps({
                 'message': 'Invalid image data',
-                'error': 'InvalidImageError',
-                'detail': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -273,8 +252,6 @@ def upload(event, _):
             'statusCode': 400,
             'body': json.dumps({
                 'message': 'Invalid image data',
-                'error': 'InvalidImageError',
-                'detail': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -285,8 +262,6 @@ def upload(event, _):
             'statusCode': 400,
             'body': json.dumps({
                 'message': 'Invalid image format',
-                'error': 'InvalidImageFormatError',
-                'detail': 'image format must be png',
             }),
             'headers': HEADERS,
         }
@@ -304,8 +279,6 @@ def upload(event, _):
             'statusCode': 500,
             'body': json.dumps({
                 'message': 'Failed to save data to S3',
-                'error': 'S3Error',
-                'detail': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -314,8 +287,6 @@ def upload(event, _):
         'statusCode': 200,
         'body': json.dumps({
             'message': 'Successfully saved data to S3',
-            'error': None,
-            'detail': None,
         }),
         'headers': HEADERS,
     }
@@ -348,9 +319,7 @@ def delete(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid request path',
-                'error': 'InvalidRequestError',
-                'detail': str(ex),
+                'message': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -360,9 +329,7 @@ def delete(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid user_id',
-                'error': 'InvalidUserIdError',
-                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': USER_ID_INVALID_MESSAGE
             }),
             'headers': HEADERS,
         }
@@ -372,9 +339,7 @@ def delete(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid category',
-                'error': 'InvalidCategoryError',
-                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': CATEGORY_INVALID_MESSAGE
             }),
             'headers': HEADERS,
         }
@@ -384,9 +349,7 @@ def delete(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid guid',
-                'error': 'InvalidGuidError',
-                'detail': 'guid must be in the format of 8-4-4-4-12 hexadecimal characters',
+                'message': GUID_INVALID_MESSAGE
             }),
             'headers': HEADERS,
         }
@@ -400,8 +363,6 @@ def delete(event, _):
             'statusCode': 500,
             'body': json.dumps({
                 'message': 'Failed to delete data from S3',
-                'error': 'S3Error',
-                'detail': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -410,8 +371,6 @@ def delete(event, _):
         'statusCode': 200,
         'body': json.dumps({
             'message': 'Successfully deleted data from S3',
-            'error': None,
-            'detail': None,
         }),
         'headers': HEADERS,
     }
@@ -442,9 +401,7 @@ def truncate(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid request path',
-                'error': 'InvalidRequestError',
-                'detail': str(ex),
+                'message': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -454,9 +411,7 @@ def truncate(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid user_id',
-                'error': 'InvalidUserIdError',
-                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': USER_ID_INVALID_MESSAGE,
             }),
             'headers': HEADERS,
         }
@@ -472,8 +427,6 @@ def truncate(event, _):
             'statusCode': 500,
             'body': json.dumps({
                 'message': 'Failed to delete data from S3',
-                'error': 'S3Error',
-                'detail': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -482,8 +435,6 @@ def truncate(event, _):
         'statusCode': 200,
         'body': json.dumps({
             'message': 'Successfully deleted data from S3',
-            'error': None,
-            'detail': None,
         }),
         'headers': HEADERS,
     }
@@ -501,9 +452,7 @@ def download(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid request body',
-                'error': 'InvalidRequestError',
-                'detail': str(ex),
+                'message': str(ex),
             }),
             'headers': HEADERS,
         }
@@ -513,9 +462,7 @@ def download(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid user_id',
-                'error': 'InvalidUserIdError',
-                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': USER_ID_INVALID_MESSAGE,
             }),
             'headers': HEADERS,
         }
@@ -525,9 +472,7 @@ def download(event, _):
         return {
             'statusCode': 400,
             'body': json.dumps({
-                'message': 'Invalid category',
-                'error': 'InvalidCategoryError',
-                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+                'message': CATEGORY_INVALID_MESSAGE,
             }),
             'headers': HEADERS,
         }
@@ -554,8 +499,6 @@ def download(event, _):
             'statusCode': 500,
             'body': json.dumps({
                 'message': 'Failed to get data from S3',
-                'error': 'S3Error',
-                'detail': str(ex),
             }),
             'headers': HEADERS,
         }
