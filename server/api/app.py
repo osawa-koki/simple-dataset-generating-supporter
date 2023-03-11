@@ -2,7 +2,9 @@ import base64
 import io
 import json
 import re
+import tempfile
 import uuid
+import zipfile
 from PIL import Image
 import boto3
 
@@ -484,4 +486,108 @@ def truncate(event, _):
             'detail': None,
         }),
         'headers': HEADERS,
+    }
+
+def download(event, _):
+    """画像を一括でダウンロードする
+    """
+
+    try:
+        # 受け取ったクエリパラメータから必要な値を取り出す
+        path_params = event[QUERY_STRING_PARAMETERS]
+        user_id = path_params[USER_ID]
+        category = path_params[CATEGORY]
+    except Exception as ex:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid request body',
+                'error': 'InvalidRequestError',
+                'detail': str(ex),
+            }),
+            'headers': HEADERS,
+        }
+
+    # user_idの形式が正しいかどうかを確認する
+    if not re.match(USER_ID_REGEX, user_id):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid user_id',
+                'error': 'InvalidUserIdError',
+                'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            }),
+            'headers': HEADERS,
+        }
+
+    # categoryの形式が正しいかどうかを確認する
+    if not re.match(CATEGORY_REGEX, category):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid category',
+                'error': 'InvalidCategoryError',
+                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            }),
+            'headers': HEADERS,
+        }
+
+    # S3から画像を取得する
+    images = []
+    images_failed = []
+    try:
+        key = f"image/{user_id}/{category}/"
+        for obj in bucket.objects.filter(Prefix=key):
+            # オブジェクトを取得する
+            response = s3.get_object(Bucket=bucket_name, Key=obj.key)
+            # オブジェクトの内容を読み込む
+            image_data = response['Body'].read()
+            guid = obj.key.split('/')[-1].replace('.png', '')
+            # 配列に格納する
+            image_object = {
+                'path': guid,
+                'image': image_data,
+            }
+            images.append(image_object)
+    except Exception as ex:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'message': 'Failed to get data from S3',
+                'error': 'S3Error',
+                'detail': str(ex),
+            }),
+            'headers': HEADERS,
+        }
+
+    # ファイルをZIP化する
+    guid = str(uuid.uuid4())
+    zip_path = f"/tmp/{guid}.zip"
+    # 一時ディレクトリを作成する
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # 各ファイルを一時ディレクトリに書き込む
+        for image_object in images:
+            file_path = temp_dir + image_object["path"]
+            with open(file_path, "wb") as f:
+                f.write(image_object["image"])
+        # 一時ディレクトリ内のファイルをZIPファイルに追加する
+        with zipfile.ZipFile(zip_path, "wb") as zip:
+            for image_object in images:
+                file_path = temp_dir + image_object["path"]
+                zip.write(file_path, arcname=image_object["path"])
+
+    # ZIPファイルをBASE64エンコードする
+    with open(zip_path, "rb") as f:
+        zip_data = f.read()
+        zip_data_base64 = base64.b64encode(zip_data)
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            'images': images,
+            'images_failed': images_failed,
+            'zip_data': zip_data_base64,
+        }),
+        'headers': HEADERS,
+        'isBase64Encoded': True,
     }
