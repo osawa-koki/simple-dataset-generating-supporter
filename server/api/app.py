@@ -484,10 +484,8 @@ def download(event, _):
         key = f"image/{user_id}/{category}/"
         for obj in bucket.objects.filter(Prefix=key):
             # オブジェクトを取得する
-            response = s3.get_object(Bucket=bucket_name, Key=obj.key)
-            # オブジェクトの内容を読み込む
-            image_data = response['Body'].read()
-            guid = obj.key.split('/')[-1].replace('.png', '')
+            image_data = obj.get()['Body'].read()
+            guid = obj.key.split('/')[-1]
             # 配列に格納する
             image_object = {
                 'path': guid,
