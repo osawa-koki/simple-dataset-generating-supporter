@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, Form, Spinner } from "react-bootstrap";
+import { BsFillTrash3Fill } from 'react-icons/bs';
 import Layout from "../components/Layout";
 import setting from "../setting";
 import { DataContext } from "../src/DataContext";
@@ -20,6 +21,27 @@ export default function GalleryPage() {
   const [loeading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { sharedData, setSharedData } = useContext(DataContext);
+
+  const Delete = (key: string) => {
+    fetch(`${setting.apiPath}/image/delete`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: sharedData.username,
+        category: selected_category,
+        guid: key,
+      }),
+    }).then(async (res) => {
+      if (res.status === 200) {
+        const new_images = images.filter((image) => image.key !== key);
+        setImages(new_images);
+      } else {
+        setError('画像の削除に失敗しました。');
+      }
+    });
+  };
 
   useEffect(() => {
     // 画像一覧を取得
@@ -144,7 +166,10 @@ export default function GalleryPage() {
                 <div id="ImageDiv" className="mt-5">
                   {
                     images.map((image) => (
-                      <img key={image.key} src={`data:image/png;base64,${image.image}`} alt={selected_category} className="img-thumbnail" />
+                      <div key={image.key} className="image-box">
+                        <img src={`data:image/png;base64,${image.image}`} alt={selected_category} className="img-thumbnail" />
+                        <BsFillTrash3Fill onClick={() => {Delete(image.key)}} className="img-delete" />
+                      </div>
                     ))
                   }
                 </div>
