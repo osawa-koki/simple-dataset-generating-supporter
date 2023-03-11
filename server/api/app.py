@@ -101,7 +101,8 @@ def fetch(event, _):
                 'message': 'Invalid request body',
                 'error': 'InvalidRequestError',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # guidが1つ以上あるかどうかを確認する
@@ -112,7 +113,8 @@ def fetch(event, _):
                 'message': 'guids must be one or more',
                 'error': 'InvalidGuidsError',
                 'detail': 'guids must be one or more',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # guidが30個以下かどうかを確認する
@@ -123,7 +125,8 @@ def fetch(event, _):
                 'message': 'guids must be 30 or less',
                 'error': 'InvalidGuidsError',
                 'detail': 'guids must be 30 or less',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # user_idの形式が正しいかどうかを確認する
@@ -134,7 +137,8 @@ def fetch(event, _):
                 'message': 'Invalid user_id',
                 'error': 'InvalidUserIdError',
                 'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # categoryの形式が正しいかどうかを確認する
@@ -145,7 +149,8 @@ def fetch(event, _):
                 'message': 'Invalid category',
                 'error': 'InvalidCategoryError',
                 'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # guidの形式が正しいかどうかを確認する
@@ -157,7 +162,8 @@ def fetch(event, _):
                     'message': 'Invalid guid',
                     'error': 'InvalidGuidError',
                     'detail': 'guid must be in the format of 8-4-4-4-12 hexadecimal characters',
-                })
+                }),
+            'headers': HEADERS,
             }
 
     # S3から画像を取得する
@@ -181,6 +187,7 @@ def fetch(event, _):
             'images': images,
             'images_failed': images_failed,
         }),
+        'headers': HEADERS,
     }
 
 def upload(event, _):
