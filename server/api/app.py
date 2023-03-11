@@ -17,6 +17,11 @@ GUIDS = 'guids'
 USER_ID_REGEX = r'^[a-zA-Z0-9_-]{3,8}$'
 CATEGORY_REGEX = r'^[a-zA-Z0-9_-]{3,8}$'
 GUID_REGEX = r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+}
 
 # BUCKET_NAME環境変数からバケット名を取得する
 bucket_name = "simple-dataset-generating-supporter-image"
@@ -50,7 +55,8 @@ def list(event, _):
                 'message': 'Invalid request body',
                 'error': 'InvalidRequestError',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # user_idの形式が正しいかどうかを確認する
@@ -206,7 +212,8 @@ def upload(event, _):
                 'message': 'Invalid request body',
                 'error': 'InvalidRequestError',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # user_idの形式が正しいかどうかを確認する
@@ -217,7 +224,8 @@ def upload(event, _):
                 'message': 'Invalid user_id',
                 'error': 'InvalidUserIdError',
                 'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # categoryの形式が正しいかどうかを確認する
@@ -228,7 +236,8 @@ def upload(event, _):
                 'message': 'Invalid category',
                 'error': 'InvalidCategoryError',
                 'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # 受け取ったimageプロパティをBASE64デコードする
@@ -241,7 +250,8 @@ def upload(event, _):
                 'message': 'Invalid image data',
                 'error': 'InvalidImageError',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # デコードしたデータが画像データかどうかを確認する
@@ -254,7 +264,8 @@ def upload(event, _):
                 'message': 'Invalid image data',
                 'error': 'InvalidImageError',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # 画像のフォーマットがpngであることを確認する
@@ -265,7 +276,8 @@ def upload(event, _):
                 'message': 'Invalid image format',
                 'error': 'InvalidImageFormatError',
                 'detail': 'image format must be png',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # 画像のサイズが128x128であることを確認する
@@ -277,7 +289,8 @@ def upload(event, _):
                 'message': 'Invalid image size', 'error': 'InvalidImageSizeError',
                 'error': 'InvalidImageSizeError',
                 'detail': 'image size must be 128x128',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # guidを生成してS3にデータを保存する
@@ -292,7 +305,8 @@ def upload(event, _):
                 'message': 'Failed to save data to S3',
                 'error': 'S3Error',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     return {
@@ -302,11 +316,7 @@ def upload(event, _):
             'error': None,
             'detail': None,
         }),
-        'headers': {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent',
-            'Access-Control-Allow-Methods': 'GET,OPTIONS,POST,PUT,DELETE',
-        },
+        'headers': HEADERS,
     }
 
 def delete(event, _):
