@@ -527,6 +527,8 @@ def download(event, _):
         'body': json.dumps({
             'zip_data': zip_data_base64,
         }),
-        'headers': HEADERS,
+        'headers': {
+            'Content-Type': 'application/zip',
+        },
         'isBase64Encoded': True,
     }
