@@ -530,9 +530,10 @@ def download(event, _):
         'headers': HEADERS,
     }
 
-def reset():
+def reset(_a, _b):
     """画像を全て削除する
     """
 
-    key = "image/"
-    bucket.objects.filter(Prefix=key).delete()
+    prefix = 'image/'
+    for obj in bucket.objects.filter(Prefix=prefix):
+        obj.delete()
