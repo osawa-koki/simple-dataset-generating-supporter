@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Form, Spinner } from "react-bootstrap";
+import { Alert, Button, Form, Spinner } from "react-bootstrap";
 import { BsFillTrash3Fill } from 'react-icons/bs';
 import Layout from "../components/Layout";
 import setting from "../setting";
@@ -43,6 +43,9 @@ export default function GalleryPage() {
         setError('画像の削除に失敗しました。');
       }
     });
+  };
+
+  const Download = () => {
   };
 
   useEffect(() => {
@@ -168,7 +171,11 @@ export default function GalleryPage() {
               images.length === 0 && selected_category !== "" ? (
                 <Alert variant="info" className="mt-3">画像がありません。</Alert>
               ) : (
-                <div id="ImageDiv" className="mt-5">
+                <>
+                  {
+                    images.length !== 0 && <Button variant="primary" onClick={() => {Download}} className="mt-5 d-block m-auto">Download All</Button>
+                  }
+                  <div id="ImageDiv" className="mt-5">
                   {
                     images.map((image) => (
                       <div key={image.key} className={`image-box ${image.deleting ? "deleting" : ""}`}>
@@ -178,6 +185,7 @@ export default function GalleryPage() {
                     ))
                   }
                 </div>
+                </>
               )
             }
             </div>
