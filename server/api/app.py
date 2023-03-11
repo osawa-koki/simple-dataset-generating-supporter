@@ -527,7 +527,5 @@ def download(event, _):
             'message': 'Successfully got data from S3',
             'data': zip_data_base64,
         }),
-        'headers': {
-            'Content-Type': 'application/zip',
-        },
+        'headers': HEADERS,
     }
