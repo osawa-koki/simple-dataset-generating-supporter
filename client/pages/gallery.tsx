@@ -46,10 +46,33 @@ export default function GalleryPage() {
   };
 
   const Download = () => {
+    (async () => {
+      fetch(`${setting.apiPath}/image/download/?user_id=${sharedData.username}&category=${selected_category}`)
+        .then(async (res) => {
+          if (res.status === 200) {
+            return await res.json();
+          } else {
+            return null;
+          }
+        }
+        ).then((data) => {
+          if (data === null) {
+            setError('画像データ一覧の取得に失敗しました。');
+            return;
+          }
+          const zip_base64 = data.data;
+          const zip = Buffer.from(zip_base64, 'base64');
+          const blob = new Blob([zip], { type: 'application/zip' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${sharedData.username}_${selected_category}.zip`;
+          a.click();
+        });
+    })();
   };
 
   useEffect(() => {
-    // 画像一覧を取得
     (async () => {
       fetch(`${setting.apiPath}/image/list/?user_id=${sharedData.username}`)
         .then(async (res) => {
@@ -173,7 +196,7 @@ export default function GalleryPage() {
               ) : (
                 <>
                   {
-                    images.length !== 0 && <Button variant="primary" onClick={() => {Download}} className="mt-5 d-block m-auto">Download All</Button>
+                    images.length !== 0 && <Button variant="primary" onClick={Download} className="mt-5 d-block m-auto">Download All</Button>
                   }
                   <div id="ImageDiv" className="mt-5">
                   {
