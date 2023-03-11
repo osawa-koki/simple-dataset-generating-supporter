@@ -92,7 +92,6 @@ def fetch(event, _):
         # 受け取ったクエリパラメータから必要な値を取り出す
         path_params = event[QUERY_STRING_PARAMETERS]
         user_id = path_params[USER_ID]
-        category = path_params[CATEGORY]
         guids = path_params[GUIDS].split(',')
     except Exception as ex:
         return {
