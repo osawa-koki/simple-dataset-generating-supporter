@@ -142,7 +142,7 @@ export default function GalleryPage() {
         </Form>
         {
           is_valid(sharedData.username) === false && (
-            <Alert variant="danger" className="mt-3">ユーザ名は半角英数字と記号(アンダースコアとハイフン)の3-8文字で入力してください。</Alert>
+            <Alert variant="danger" className="mt-3">ユーザ名は半角英数字と記号(アンダースコアとハイフン)の3-16文字で入力してください。</Alert>
           )
         }
         {

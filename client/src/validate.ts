@@ -1,5 +1,5 @@
-const USER_ID_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
-const CATEGORY_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
+const USER_ID_REGEX = /^[a-zA-Z0-9_-]{3,16}$/;
+const CATEGORY_REGEX = /^[a-zA-Z0-9_-]{1,8}$/;
 
 const is_valid_both = (username: string, category: string) => {
   return USER_ID_REGEX.test(username) && CATEGORY_REGEX.test(category);

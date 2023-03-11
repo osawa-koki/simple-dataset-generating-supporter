@@ -7,7 +7,7 @@ import Layout from "../components/Layout";
 import { DataContext } from "../src/DataContext";
 import setting from "../setting";
 
-import { is_valid_both as is_valid } from "../src/validate";
+import { is_valid_both as is_valid, is_valid_username, is_valid_category } from "../src/validate";
 
 const CANVAS_NAME = 'MyCanvas';
 const IMAGE_SIZE = 312;
@@ -86,7 +86,16 @@ export default function ContactPage() {
             }} />
           </Form.Group>
         </Form>
-        {(is_valid(sharedData.username, sharedData.category) === false) && <Alert variant="danger" className="mt-3">ユーザ名とカテゴリは半角英数字と記号(アンダースコアとハイフン)の3-8文字で入力してください。</Alert>}
+        {
+          (is_valid(sharedData.username, sharedData.category) === false) && (
+            <Alert variant="danger" className="mt-3">
+              <ul>
+                {is_valid_username(sharedData.username) === false && <li>ユーザ名は半角英数字の3～16文字で入力してください。</li>}
+                {is_valid_category(sharedData.category) === false && <li>categoryカテゴリは半角英数字の1～8文字で入力してください。</li>}
+              </ul>
+            </Alert>
+          )
+        }
         <div id="CanvasWrapper" className="mt-5">
           <canvas id={CANVAS_NAME} width={IMAGE_SIZE} height={IMAGE_SIZE} />
         </div>
