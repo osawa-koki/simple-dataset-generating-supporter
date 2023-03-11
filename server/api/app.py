@@ -520,7 +520,7 @@ def download(event, _):
     # ZIPファイルをBASE64エンコードする
     with open(zip_path, "rb") as f:
         zip_data = f.read()
-        zip_data_base64 = base64.b64encode(zip_data)
+        zip_data_base64 = base64.b64encode(zip_data).decode("utf-8")
 
     return {
         'statusCode': 200,
