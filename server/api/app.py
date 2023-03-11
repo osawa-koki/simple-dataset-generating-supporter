@@ -479,7 +479,6 @@ def download(event, _):
 
     # S3から画像を取得する
     images = []
-    images_failed = []
     try:
         key = f"image/{user_id}/{category}/"
         for obj in bucket.objects.filter(Prefix=key):
