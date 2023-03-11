@@ -12,7 +12,7 @@ Globals:
     Cors:
       AllowOrigin: "'*'"
       AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
-      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+      AllowHeaders: "'Content-Type'"
 
 Resources:
   MyBucket:
