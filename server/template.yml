@@ -9,8 +9,6 @@ Globals:
     Timeout: 30
     MemorySize: 128
   Api:
-    BinaryMediaTypes:
-      - "application/zip"
     Cors:
       AllowOrigin: "'*'"
       AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
