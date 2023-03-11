@@ -217,6 +217,29 @@ Resources:
       DockerContext: ./api
       DockerTag: python3.9-v1
 
+  ResetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-reset
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.reset" ]
+      Architectures:
+        - x86_64
+      Events:
+        ScheduleEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 ? * MON *)
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
