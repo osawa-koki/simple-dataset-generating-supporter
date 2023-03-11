@@ -523,9 +523,10 @@ def download(event, _):
 
     return {
         'statusCode': 200,
-        'body': {
+        'body': json.dumps({
+            'message': 'Successfully got data from S3',
             'data': zip_data_base64,
-        },
+        }),
         'headers': {
             'Content-Type': 'application/zip',
         },
