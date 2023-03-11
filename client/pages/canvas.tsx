@@ -7,13 +7,10 @@ import Layout from "../components/Layout";
 import { DataContext } from "../src/DataContext";
 import setting from "../setting";
 
+import { is_valid_both as is_valid } from "../src/validate";
+
 const CANVAS_NAME = 'MyCanvas';
-const USER_ID_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
-const CATEGORY_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
 const IMAGE_SIZE = 312;
-const is_valid = (username: string, category: string) => {
-  return USER_ID_REGEX.test(username) && CATEGORY_REGEX.test(category);
-}
 
 export default function ContactPage() {
 
