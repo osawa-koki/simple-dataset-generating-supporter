@@ -512,7 +512,7 @@ def download(event, _):
             with open(file_path, "wb") as f:
                 f.write(image_object["image"])
         # 一時ディレクトリ内のファイルをZIPファイルに追加する
-        with zipfile.ZipFile(zip_path, "wb") as zip:
+        with zipfile.ZipFile(zip_path, "w") as zip:
             for image_object in images:
                 file_path = temp_dir + image_object["path"]
                 zip.write(file_path, arcname=image_object["path"])
