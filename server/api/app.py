@@ -523,7 +523,9 @@ def download(event, _):
 
     return {
         'statusCode': 200,
-        'body': zip_data_base64,
+        'body': {
+            'data': zip_data_base64,
+        },
         'headers': {
             'Content-Type': 'application/zip',
         },
