@@ -10,6 +10,7 @@ import { is_valid_username as is_valid } from "../src/validate";
 type ImageStruct = {
   key: string;
   image: string;
+  deleting: boolean;
 };
 
 export default function GalleryPage() {
@@ -22,8 +23,15 @@ export default function GalleryPage() {
   const [error, setError] = useState<string | null>(null);
   const { sharedData, setSharedData } = useContext(DataContext);
 
-  const Delete = (key: string) => {
-    // image/user_id/category/guid.png
+  const Delete = async (key: string) => {
+    const new_images = images.map((image) => {
+      if (image.key === key) {
+        image.deleting = true;
+      }
+      return image;
+    });
+    setImages(new_images);
+    await new Promise((resolve) => setTimeout(resolve, setting.smallWaitingTime));
     const guid = key.split('/')[3].replace('.png', '');
     fetch(`${setting.apiPath}/image/delete?user_id=${sharedData.username}&category=${selected_category}&guid=${guid}`, {
       method: 'DELETE',
@@ -94,6 +102,9 @@ export default function GalleryPage() {
               setLoading(false);
               return;
             }
+            data.images.forEach((image: ImageStruct) => {
+              image.deleting = false;
+            });
             setImages(data.images as ImageStruct[]);
             setLoading(false);
           });
@@ -160,7 +171,7 @@ export default function GalleryPage() {
                 <div id="ImageDiv" className="mt-5">
                   {
                     images.map((image) => (
-                      <div key={image.key} className="image-box">
+                      <div key={image.key} className={`image-box ${image.deleting ? "deleting" : ""}`}>
                         <img src={`data:image/png;base64,${image.image}`} alt={selected_category} className="img-thumbnail" />
                         <BsFillTrash3Fill onClick={() => {Delete(image.key)}} className="img-delete" />
                       </div>

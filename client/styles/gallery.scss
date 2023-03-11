@@ -25,6 +25,12 @@
         border-radius: 50%;
         cursor: pointer;
       }
+      &.deleting {
+        .img-delete {
+          color: gray;
+          cursor: not-allowed;
+        }
+      }
     }
   }
 }
