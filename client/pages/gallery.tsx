@@ -23,7 +23,9 @@ export default function GalleryPage() {
   const { sharedData, setSharedData } = useContext(DataContext);
 
   const Delete = (key: string) => {
-    fetch(`${setting.apiPath}/image/delete?user_id=${sharedData.username}&category=${selected_category}&guid=${key}`, {
+    // image/user_id/category/guid.png
+    const guid = key.split('/')[3].replace('.png', '');
+    fetch(`${setting.apiPath}/image/delete?user_id=${sharedData.username}&category=${selected_category}&guid=${guid}`, {
       method: 'DELETE',
     }).then(async (res) => {
       if (res.status === 200) {
