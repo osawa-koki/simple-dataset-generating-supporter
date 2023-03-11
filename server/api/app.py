@@ -530,7 +530,7 @@ def download(event, _):
         'headers': HEADERS,
     }
 
-def reset():
+def reset(_a, _b):
     """画像を全て削除する
     """
 
