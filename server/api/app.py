@@ -525,8 +525,6 @@ def download(event, _):
     return {
         'statusCode': 200,
         'body': json.dumps({
-            'images': images,
-            'images_failed': images_failed,
             'zip_data': zip_data_base64,
         }),
         'headers': HEADERS,
