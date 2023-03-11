@@ -113,7 +113,7 @@ export default function GalleryPage() {
             <Alert variant="info" className="mt-3">画像がありません。</Alert>
           ) : (
             images.map((image) => (
-              <img key={image.key} src={image.image} alt={image.key} className="img-thumbnail" />
+              <img key={image.key} src={`data:image/png;base64,${image.image}`} alt={selected_category} className="img-thumbnail" />
             ))
           )
         }
