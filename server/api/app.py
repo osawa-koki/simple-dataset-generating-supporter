@@ -67,7 +67,8 @@ def list(event, _):
                 'message': 'Invalid user_id',
                 'error': 'InvalidUserIdError',
                 'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # S3からキー一覧を取得する
@@ -79,7 +80,8 @@ def list(event, _):
         'statusCode': 200,
         'body': json.dumps({
             'keys': keys,
-        })
+        }),
+        'headers': HEADERS,
     }
 
 def fetch(event, _):
