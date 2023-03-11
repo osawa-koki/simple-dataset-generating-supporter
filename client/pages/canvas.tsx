@@ -35,7 +35,7 @@ export default function ContactPage() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        username,
+        user_id: username,
         category,
         image: data,
       }),
