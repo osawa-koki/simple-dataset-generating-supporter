@@ -14,6 +14,11 @@ const pages = [
     path: '/canvas/',
     name: 'Canvas',
   },
+  {
+    emoji: '🖼️',
+    path: '/gallery/',
+    name: 'Gallery',
+  },
 ];
 
 export default pages;
