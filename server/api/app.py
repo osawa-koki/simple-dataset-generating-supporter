@@ -92,6 +92,7 @@ def fetch(event, _):
         # 受け取ったクエリパラメータから必要な値を取り出す
         path_params = event[QUERY_STRING_PARAMETERS]
         user_id = path_params[USER_ID]
+        category = path_params[CATEGORY]
         guids = path_params[GUIDS].split(',')
     except Exception as ex:
         return {
@@ -136,6 +137,18 @@ def fetch(event, _):
                 'message': 'Invalid user_id',
                 'error': 'InvalidUserIdError',
                 'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
+            }),
+            'headers': HEADERS,
+        }
+
+    # categoryの形式が正しいかどうかを確認する
+    if not re.match(CATEGORY_REGEX, category):
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'message': 'Invalid category',
+                'error': 'InvalidCategoryError',
+                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
             }),
             'headers': HEADERS,
         }
