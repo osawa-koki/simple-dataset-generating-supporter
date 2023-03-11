@@ -527,5 +527,4 @@ def download(event, _):
         'headers': {
             'Content-Type': 'application/zip',
         },
-        'isBase64Encoded': True,
     }
