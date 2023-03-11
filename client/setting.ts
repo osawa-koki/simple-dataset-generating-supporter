@@ -7,6 +7,7 @@ const setting = {
   apiPath: process.env.NEXT_PUBLIC_LAMBDA_API_URL,
   title: "🧩 Let's make dataset! 🧩",
   waitingTime: 1000,
+  smallWaitingTime: 50,
 };
 
 export default setting;

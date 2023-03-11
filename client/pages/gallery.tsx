@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Alert, Form } from "react-bootstrap";
+import { Alert, Form, Spinner } from "react-bootstrap";
 import Layout from "../components/Layout";
 import setting from "../setting";
 import { DataContext } from "../src/DataContext";
@@ -17,6 +17,7 @@ export default function GalleryPage() {
   const [images, setImages] = useState<ImageStruct[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [selected_category, setSelectedCategory] = useState<string>("");
+  const [loeading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { sharedData, setSharedData } = useContext(DataContext);
 
@@ -45,30 +46,42 @@ export default function GalleryPage() {
   }, [sharedData.username]);
 
   useEffect(() => {
-    setImages([]);
-    setError(null);
-    // 対象のカテゴリの画像キーを取得
-    const target_keys = keys.filter((key) => key.split('/')[2] === selected_category);
-    if (target_keys.length === 0) return;
-    if (selected_category === "") return;
-    const guids = target_keys.map((key) => key.split('/')[3].replace('.png', '')).join(',');
     (async () => {
-      fetch(`${setting.apiPath}/image/fetch/?user_id=${sharedData.username}&category=${selected_category}&guids=${guids}`)
-        .then(async (res) => {
-          if (res.status === 200) {
-            return await res.json();
-          } else {
-            return null;
-          }
-        })
-        .then((data) => {
-          if (data === null) {
-            setError('画像データ一覧の取得に失敗しました。');
-            setImages([]);
-            return;
-          }
-          setImages(data.images as ImageStruct[]);
-        });
+      setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, setting.smallWaitingTime));
+      setImages([]);
+      setError(null);
+      // 対象のカテゴリの画像キーを取得
+      const target_keys = keys.filter((key) => key.split('/')[2] === selected_category);
+      if (target_keys.length === 0) {
+        setLoading(false);
+        return;
+      };
+      if (selected_category === "") {
+        setLoading(false);
+        return;
+      };
+      const guids = target_keys.map((key) => key.split('/')[3].replace('.png', '')).join(',');
+      (async () => {
+        fetch(`${setting.apiPath}/image/fetch/?user_id=${sharedData.username}&category=${selected_category}&guids=${guids}`)
+          .then(async (res) => {
+            if (res.status === 200) {
+              return await res.json();
+            } else {
+              return null;
+            }
+          })
+          .then((data) => {
+            if (data === null) {
+              setError('画像データ一覧の取得に失敗しました。');
+              setImages([]);
+              setLoading(false);
+              return;
+            }
+            setImages(data.images as ImageStruct[]);
+            setLoading(false);
+          });
+      })();
     })();
   }, [keys, selected_category, sharedData.username]);
 
@@ -111,12 +124,33 @@ export default function GalleryPage() {
           )
         }
         {
-          images.length === 0 && selected_category !== "" ? (
-            <Alert variant="info" className="mt-3">画像がありません。</Alert>
+          loeading ? (
+            <div className="mt-3 d-flex justify-content-between">
+              <Spinner animation="border" variant="primary" />
+              <Spinner animation="border" variant="secondary" />
+              <Spinner animation="border" variant="success" />
+              <Spinner animation="border" variant="danger" />
+              <Spinner animation="border" variant="warning" />
+              <Spinner animation="border" variant="info" />
+              <Spinner animation="border" variant="light" />
+              <Spinner animation="border" variant="dark" />
+            </div>
           ) : (
-            images.map((image) => (
-              <img key={image.key} src={`data:image/png;base64,${image.image}`} alt={selected_category} className="img-thumbnail" />
-            ))
+            <div>
+            {
+              images.length === 0 && selected_category !== "" ? (
+                <Alert variant="info" className="mt-3">画像がありません。</Alert>
+              ) : (
+                <div id="ImageDiv" className="mt-5">
+                  {
+                    images.map((image) => (
+                      <img key={image.key} src={`data:image/png;base64,${image.image}`} alt={selected_category} className="img-thumbnail" />
+                    ))
+                  }
+                </div>
+              )
+            }
+            </div>
           )
         }
       </div>

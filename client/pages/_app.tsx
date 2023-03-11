@@ -10,6 +10,7 @@ import '../styles/menu.scss';
 import '../styles/index.scss';
 import '../styles/about.scss';
 import '../styles/canvas.scss';
+import '../styles/gallery.scss';
 
 import Head from 'next/head';
 
