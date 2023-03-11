@@ -23,6 +23,11 @@ export default function ContactPage() {
     setCanvas(canvas);
   }, []);
 
+  const ClearCanvas = useCallback(() => {
+    canvas.remove.apply(canvas, canvas.getObjects());
+    canvas.backgroundColor = 'white';
+  }, [canvas]);
+
   const Submit = useCallback(() => {
     if (canvas === null) return;
     setMessage(['primary', 'アップロード中...']);
@@ -40,18 +45,14 @@ export default function ContactPage() {
     }).then(async (res) => {
       if (res.status === 200) {
         setMessage(['info', 'アップロードに成功しました。']);
+        ClearCanvas();
       } else {
         setMessage(['danger', 'アップロードに失敗しました。']);
       }
       await new Promise((resolve) => setTimeout(resolve, setting.waitingTime));
       setMessage(['secondary', '']);
     });
-  }, [canvas, sharedData]);
-
-  const ClearCanvas = useCallback(() => {
-    canvas.remove.apply(canvas, canvas.getObjects());
-    canvas.backgroundColor = 'white';
-  }, [canvas]);
+  }, [ClearCanvas, canvas, sharedData.category, sharedData.username]);
 
   useEffect(() => {
     if (canvas === null) return;
