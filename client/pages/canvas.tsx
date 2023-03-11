@@ -35,9 +35,9 @@ export default function ContactPage() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        data,
         username,
         category,
+        image: data,
       }),
     }).then((res) => {
       if (res.status === 200) {
