@@ -141,18 +141,6 @@ def fetch(event, _):
             'headers': HEADERS,
         }
 
-    # categoryの形式が正しいかどうかを確認する
-    if not re.match(CATEGORY_REGEX, category):
-        return {
-            'statusCode': 400,
-            'body': json.dumps({
-                'message': 'Invalid category',
-                'error': 'InvalidCategoryError',
-                'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            }),
-            'headers': HEADERS,
-        }
-
     # guidの形式が正しいかどうかを確認する
     for guid in guids:
         if not re.match(GUID_REGEX, guid):
