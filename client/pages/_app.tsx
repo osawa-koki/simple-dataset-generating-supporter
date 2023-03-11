@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppProps } from 'next/app';
 import { useState } from 'react';
 
@@ -21,9 +21,27 @@ import SharedData from '../src/SharedData';
 export default function MyApp({ Component, pageProps }: AppProps) {
 
   const [sharedData, setSharedData] = useState<SharedData>({
-    username: 'username',
-    category: 'category',
+    username: '',
+    category: '',
   });
+
+  useEffect(() => {
+    console.log('loaded');
+    const username = localStorage.getItem('username');
+    const category = localStorage.getItem('category');
+    console.log(`username: ${username} | category: ${category}`);
+    if (username !== null || category !== null) {
+      setSharedData({
+        username: username === null ? '' : username,
+        category: category === null ? '' : category,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('username', sharedData.username);
+    localStorage.setItem('category', sharedData.category);
+  }, [sharedData.category, sharedData.username]);
 
   return (
     <>
