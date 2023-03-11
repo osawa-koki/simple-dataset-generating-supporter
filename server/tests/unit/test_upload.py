@@ -5,15 +5,15 @@ from unittest.mock import patch, MagicMock
 from moto import mock_s3
 from ...api import app
 
-# ユーザ名とカテゴリは3文字以上8文字以下で、半角英数字、ハイフン、アンダースコアのみを許可する
+# USER_ID_REGEX = r'^[a-zA-Z0-9_-]{3,16}$'
+# CATEGORY_REGEX = r'^[a-zA-Z0-9_-]{1,8}$'
 @pytest.mark.parametrize(
     "user_id, category, is_valid", [
         ("user", "category", True),
-        ("---", "___", True),
-        ("___", "---", True),
-        ("aaaaaaaa", "aaaaaaaa", True),
-        ("user", "category_xxxxx", False),
-        ("user_xxxxx", "category", False),
+        ("", "category", False),
+        ("user", "", False),
+        ("x x", "category", False),
+        ("user", "x x", False),
     ]
 )
 @mock_s3
