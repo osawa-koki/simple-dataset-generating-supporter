@@ -8,8 +8,51 @@ Globals:
   Function:
     Timeout: 30
     MemorySize: 128
+  Api:
+    Cors:
+      AllowOrigin: "'*'"
+      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+      AllowHeaders: "'*'"
 
 Resources:
+  MyBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: "simple-dataset-generating-supporter-image"
+      AccessControl: Private
+      VersioningConfiguration:
+        Status: Enabled
+
+  MyLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: simple-dataset-generating-supporter-lambda-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: simple-dataset-generating-supporter-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: AllowS3Object
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                Resource: !Sub "arn:aws:s3:::${MyBucket}/*"
+              - Sid: AllowS3List
+                Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource: !Sub "arn:aws:s3:::${MyBucket}"
+
   PingFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -20,7 +63,7 @@ Resources:
       Architectures:
         - x86_64
       Events:
-        PingFunctionApi:
+        MyApiGateway:
           Type: Api
           Properties:
             Path: /ping
@@ -30,11 +73,155 @@ Resources:
       DockerContext: ./api
       DockerTag: python3.9-v1
 
+  ListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-list
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.list" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image/list
+            Method: get
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
+  FetchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-fetch
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.fetch" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image/fetch
+            Method: get
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
+  UploadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-upload
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.upload" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image/upload
+            Method: post
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
+  DeleteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-delete
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.delete" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image/delete
+            Method: delete
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
+  TruncateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-truncate
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.truncate" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image/truncate
+            Method: delete
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
+  DownloadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: simple-dataset-generating-supporter-download
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.download" ]
+      Architectures:
+        - x86_64
+      Events:
+        MyApiGateway:
+          Type: Api
+          Properties:
+            Path: /image/download
+            Method: get
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  PingFunctionApi:
+  MyApiGateway:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
   PingFunction:

@@ -11,8 +11,13 @@ const pages = [
   },
   {
     emoji: '💓',
-    path: '/contact/',
-    name: 'Contact',
+    path: '/canvas/',
+    name: 'Canvas',
+  },
+  {
+    emoji: '🖼️',
+    path: '/gallery/',
+    name: 'Gallery',
   },
 ];
 

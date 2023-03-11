@@ -7,7 +7,7 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -15,7 +15,7 @@ env:
   project_name: simple-dataset-generating-supporter
   server_directory: ./server
   client_directory: ./client
-  api_gateway_name: PingFunctionApi
+  api_gateway_name: MyApiGateway
 
 # Allow one concurrent deployment
 concurrency:
@@ -25,10 +25,22 @@ concurrency:
 jobs:
   lambda-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-      # テストを実装する
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install -r ./tests/requirements.txt
+          pip install -r ./api/requirements.txt
+        working-directory: ${{ env.server_directory }}
+      - name: Test
+        run: pytest
+        working-directory: ${{ env.server_directory }}
     outputs:
       test-status: ${{ job.status }}
   lambda-deploy:
@@ -37,9 +49,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
       - uses: aws-actions/setup-sam@v2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -48,20 +62,14 @@ jobs:
         working-directory: ${{ env.server_directory }}
       - name: Deploy Lambda
         run: |
+          aws s3 ls s3://${{ env.project_name }} || aws s3 mb s3://${{ env.project_name }}
           sam deploy \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --resolve-image-repos \
             --stack-name ${{ env.project_name }} \
             --s3-bucket ${{ env.project_name }} \
-            --capabilities CAPABILITY_IAM \
-          || aws s3 mb s3://${{ env.project_name }} && sam deploy \
-            --no-confirm-changeset \
-            --no-fail-on-empty-changeset \
-            --resolve-image-repos \
-            --stack-name ${{ env.project_name }} \
-            --s3-bucket ${{ env.project_name }} \
-            --capabilities CAPABILITY_IAM
+            --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
         working-directory: ${{ env.server_directory }}
       - name: Get API Gateway URL
         run: |
@@ -89,13 +97,16 @@ jobs:
     # ★ Outputsで機密情報を扱うことはできない？
   nextjs-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: ${{ matrix.node-version }}
           cache: yarn
           cache-dependency-path: ./**/yarn.lock
       - name: Install dependencies
@@ -106,25 +117,66 @@ jobs:
         working-directory: ${{ env.client_directory }}
     outputs:
       test-status: ${{ job.status }}
+  nextjs-prettify:
+    needs: nextjs-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - name: Install dependencies
+      run: yarn install
+      working-directory: ${{ env.client_directory }}
+    - name: Prettify code
+      run: |
+        yarn prettify --check
+        CHANGES=$(git status --porcelain)
+        if [ -n "$CHANGES" ]; then
+          git config --global user.email "${{ github.actor }}@github.com"
+          git config --global user.name "BOT.${{ github.actor }}"
+          git add -A
+          git commit -m "Prettify code with yarn prettify"
+          git push "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY" "$GITHUB_REF"
+        fi
+      working-directory: ${{ env.client_directory }}
+  nextjs-lint:
+    needs: nextjs-prettify
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - name: Install dependencies
+      run: yarn install
+      working-directory: ${{ env.client_directory }}
+    - name: Lint code
+      run: yarn lint
+      working-directory: ${{ env.client_directory }}
   # Build job
   nextjs-build:
     needs:
       - lambda-deploy
-      - nextjs-test
+      - nextjs-lint
     if: ${{ needs.nextjs-test.outputs.test-status == 'success' }}
     runs-on: ubuntu-latest
     steps:
       # ★ 機密情報を扱う際にOutputsを使用すると空文字になるため、二度手間になってしまうが、、、
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      # ★ 機密情報を扱う際にOutputsを使用すると空文字になるため、二度手間になってしまうが、、、
       - name: Get API Gateway URL
         run: |
           API_GATEWAY_URL=$(aws cloudformation describe-stacks --stack-name ${{ env.project_name }} --query "Stacks[0].Outputs[?OutputKey=='${{ env.api_gateway_name }}'].OutputValue" --output text --no-cli-pager)
           echo "API_GATEWAY_URL=$API_GATEWAY_URL" >> $GITHUB_ENV
+      # ★ 機密情報を扱う際にOutputsを使用すると空文字になるため、二度手間になってしまうが、、、
       - name: API Gateway URL empty guard
         run: |
           echo "API Gateway URL -> ${{ env.API_GATEWAY_URL }}"
@@ -150,32 +202,18 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v2
         with:
-          # Automatically inject basePath in your Next.js configuration file and disable
-          # server side image optimization (https://nextjs.org/docs/api-reference/next/image#unoptimized).
-          #
-          # You may remove this line if you want to manage the configuration yourself.
           static_site_generator: next
       - name: Restore cache
         uses: actions/cache@v3
         with:
           path: |
             .next/cache
-          # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
         run: yarn install
         working-directory: ${{ env.client_directory }}
-      # - name: Generating .env.local
-      #   run: |
-      #     echo "${{ secrets.ENV_LOCAL }}" > .env.local
-      - name: Show API Gateway URL
-        env:
-          api-gateway-url: ${{ env.API_GATEWAY_URL }}
-        run: |
-          echo "API Gateway URL -> ${{ env.api-gateway-url }}"
       - name: Check status code of curl response
         env:
           api-gateway-url: ${{ env.API_GATEWAY_URL }}
@@ -194,22 +232,6 @@ jobs:
           api-gateway-url: ${{ env.API_GATEWAY_URL }}
         run: |
           echo "NEXT_PUBLIC_LAMBDA_API_URL=${{ env.API_GATEWAY_URL }}" >> .env.local
-        working-directory: ${{ env.client_directory }}
-      - name: My Debug # デバグ用コード
-        env:
-          api-gateway-url: ${{ env.API_GATEWAY_URL }}
-        run: |
-          echo "NEXT_PUBLIC_LAMBDA_API_URL=${{ env.API_GATEWAY_URL }}" >> ./public/env.txt
-        working-directory: ${{ env.client_directory }}
-      - name: My Debug # デバグ用コード
-        env:
-          api-gateway-url: ${{ needs.lambda-deploy.outputs.api-gateway-url }}
-        run: |
-          echo "NEXT_PUBLIC_LAMBDA_API_URL=${{ env.api-gateway-url }}" >> ./public/output-env.txt
-        working-directory: ${{ env.client_directory }}
-      - name: Cat .env.local
-        run: |
-          cat .env.local
         working-directory: ${{ env.client_directory }}
       - name: Build with Next.js
         run: yarn build

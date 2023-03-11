@@ -1,0 +1,36 @@
+
+#Gallery {
+  #ImageDiv {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 500px;
+    overflow: auto;
+    .image-box {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      .img-thumbnail {
+        position: absolute;
+        inset: 0;
+      }
+      .img-delete {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 20%;
+        height: 20%;
+        color: red;
+        background-color: #fff;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      &.deleting {
+        .img-delete {
+          color: gray;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
