@@ -13,8 +13,8 @@ Globals:
       - "application/zip"
     Cors:
       AllowOrigin: "'*'"
-      AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
-      AllowHeaders: "'Content-Type'"
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
 
 Resources:
   MyBucket:
