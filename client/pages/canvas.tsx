@@ -27,23 +27,21 @@ export default function ContactPage() {
   const Submit = useCallback(() => {
     if (canvas === null) return;
     const data = canvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
-    const username = sharedData.username;
-    const category = sharedData.category;
     fetch(`${setting.apiPath}/image/upload`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        user_id: username,
-        category,
+        user_id: sharedData.username,
+        category: sharedData.category,
         image: data,
       }),
     }).then((res) => {
       if (res.status === 200) {
-        alert('送信しました。');
+        alert('アップロードに成功しました。');
       } else {
-        alert('送信に失敗しました。');
+        alert('アップロードに失敗しました。');
       }
     });
   }, [canvas, sharedData]);
@@ -87,7 +85,7 @@ export default function ContactPage() {
         </Form>
         {(is_valid(sharedData.username, sharedData.category) === false) && <Alert variant="danger" className="mt-3">ユーザ名とカテゴリは半角英数字と記号(アンダースコアとハイフン)の3-8文字で入力してください。</Alert>}
         <div id="CanvasWrapper" className="mt-5">
-          <canvas id={CANVAS_NAME} width={300} height={300} />
+          <canvas id={CANVAS_NAME} width={128} height={128} />
         </div>
         <div className="mt-5 d-flex justify-content-center">
           <Button variant="primary" className="mx-3" disabled={is_valid(sharedData.username, sharedData.category) === false} onClick={Submit}>Submit 📨</Button>
