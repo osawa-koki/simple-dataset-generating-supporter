@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   python3.9
-  Sample SAM Template for simple-dataset-generating-supporter
+  Sample SAM Template for !Sub simple-dataset-generating-supporter
 
 Globals:
   Function:
@@ -18,7 +18,7 @@ Resources:
   MyBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: "simple-dataset-generating-supporter-image"
+      BucketName: !Sub ${AWS::StackName}-image
       AccessControl: Private
       VersioningConfiguration:
         Status: Enabled
@@ -26,7 +26,7 @@ Resources:
   MyLambdaRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: simple-dataset-generating-supporter-lambda-role
+      RoleName: !Sub ${AWS::StackName}-lambda-role
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -35,7 +35,7 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: simple-dataset-generating-supporter-policy
+        - PolicyName: !Sub ${AWS::StackName}-policy
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -56,7 +56,7 @@ Resources:
   PingFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: simple-dataset-generating-supporter-ping
+      FunctionName: !Sub ${AWS::StackName}-ping
       PackageType: Image
       ImageConfig:
         Command: [ "app.ping" ]
@@ -76,7 +76,7 @@ Resources:
   ListFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: simple-dataset-generating-supporter-list
+      FunctionName: !Sub ${AWS::StackName}-list
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
@@ -100,7 +100,7 @@ Resources:
   FetchFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: simple-dataset-generating-supporter-fetch
+      FunctionName: !Sub ${AWS::StackName}-fetch
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
@@ -124,7 +124,7 @@ Resources:
   UploadFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: simple-dataset-generating-supporter-upload
+      FunctionName: !Sub ${AWS::StackName}-upload
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
@@ -148,7 +148,7 @@ Resources:
   DeleteFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: simple-dataset-generating-supporter-delete
+      FunctionName: !Sub ${AWS::StackName}-delete
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
@@ -172,7 +172,7 @@ Resources:
   TruncateFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: simple-dataset-generating-supporter-truncate
+      FunctionName: !Sub ${AWS::StackName}-truncate
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
@@ -196,7 +196,7 @@ Resources:
   DownloadFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: simple-dataset-generating-supporter-download
+      FunctionName: !Sub ${AWS::StackName}-download
       PackageType: Image
       Role: !GetAtt MyLambdaRole.Arn
       ImageConfig:
@@ -209,6 +209,29 @@ Resources:
           Properties:
             Path: /image/download
             Method: get
+      Environment:
+        Variables:
+          MY_BUCKET_NAME: !Ref MyBucket
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: python3.9-v1
+
+  ResetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-reset
+      PackageType: Image
+      Role: !GetAtt MyLambdaRole.Arn
+      ImageConfig:
+        Command: [ "app.reset" ]
+      Architectures:
+        - x86_64
+      Events:
+        ScheduleEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 0 ? * MON *)
       Environment:
         Variables:
           MY_BUCKET_NAME: !Ref MyBucket
