@@ -49,9 +49,11 @@ export default function GalleryPage() {
     setError(null);
     // 対象のカテゴリの画像キーを取得
     const target_keys = keys.filter((key) => key.split('/')[2] === selected_category);
-    const guids = target_keys.map((key) => key.split('/')[3]).join(',');
+    if (target_keys.length === 0) return;
+    if (selected_category === "") return;
+    const guids = target_keys.map((key) => key.split('/')[3].replace('.png', '')).join(',');
     (async () => {
-      fetch(`${setting.apiPath}/image/fetch/?user_id=${sharedData.username}&guids=${guids}`)
+      fetch(`${setting.apiPath}/image/fetch/?user_id=${sharedData.username}&category=${selected_category}&guids=${guids}`)
         .then(async (res) => {
           if (res.status === 200) {
             return await res.json();
