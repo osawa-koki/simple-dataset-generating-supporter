@@ -349,7 +349,8 @@ def delete(event, _):
                 'message': 'Invalid request path',
                 'error': 'InvalidRequestError',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # user_idの形式が正しいかどうかを確認する
@@ -360,7 +361,8 @@ def delete(event, _):
                 'message': 'Invalid user_id',
                 'error': 'InvalidUserIdError',
                 'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # categoryの形式が正しいかどうかを確認する
@@ -371,7 +373,8 @@ def delete(event, _):
                 'message': 'Invalid category',
                 'error': 'InvalidCategoryError',
                 'detail': 'category must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # guidの形式が正しいかどうかを確認する
@@ -382,7 +385,8 @@ def delete(event, _):
                 'message': 'Invalid guid',
                 'error': 'InvalidGuidError',
                 'detail': 'guid must be in the format of 8-4-4-4-12 hexadecimal characters',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # S3から画像を削除する
@@ -396,7 +400,8 @@ def delete(event, _):
                 'message': 'Failed to delete data from S3',
                 'error': 'S3Error',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     return {
@@ -405,7 +410,8 @@ def delete(event, _):
             'message': 'Successfully deleted data from S3',
             'error': None,
             'detail': None,
-        })
+        }),
+        'headers': HEADERS,
     }
 
 def truncate(event, _):
@@ -437,7 +443,8 @@ def truncate(event, _):
                 'message': 'Invalid request path',
                 'error': 'InvalidRequestError',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # user_idの形式が正しいかどうかを確認する
@@ -448,7 +455,8 @@ def truncate(event, _):
                 'message': 'Invalid user_id',
                 'error': 'InvalidUserIdError',
                 'detail': 'user_id must be 3 or more characters and only contain alphanumeric characters, hyphens, and underscores',
-            })
+            }),
+            'headers': HEADERS,
         }
 
     # categoryの形式が正しいかどうかを確認する
@@ -464,7 +472,8 @@ def truncate(event, _):
                 'message': 'Failed to delete data from S3',
                 'error': 'S3Error',
                 'detail': str(ex),
-            })
+            }),
+            'headers': HEADERS,
         }
 
     return {
@@ -473,5 +482,6 @@ def truncate(event, _):
             'message': 'Successfully deleted data from S3',
             'error': None,
             'detail': None,
-        })
+        }),
+        'headers': HEADERS,
     }
