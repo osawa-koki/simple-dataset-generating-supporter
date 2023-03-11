@@ -280,18 +280,8 @@ def upload(event, _):
             'headers': HEADERS,
         }
 
-    # 画像のサイズが128x128であることを確認する
-    width, height = image.size
-    if width != IMAGE_SIZE or height != IMAGE_SIZE:
-        return {
-            'statusCode': 400,
-            'body': json.dumps({
-                'message': 'Invalid image size', 'error': 'InvalidImageSizeError',
-                'error': 'InvalidImageSizeError',
-                'detail': 'image size must be 128x128',
-            }),
-            'headers': HEADERS,
-        }
+    # 画像のサイズを128x128にリサイズする
+    image = image.resize((IMAGE_SIZE, IMAGE_SIZE))
 
     # guidを生成してS3にデータを保存する
     try:
