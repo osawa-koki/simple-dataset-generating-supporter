@@ -18,6 +18,7 @@ const is_valid = (username: string, category: string) => {
 export default function ContactPage() {
 
   const [canvas, setCanvas] = useState<any>(null);
+  const [message, setMessage] = useState<['secondary' | 'primary' | 'info' | 'danger', string]>(['secondary', '']);
   const { sharedData, setSharedData } = React.useContext(DataContext);
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function ContactPage() {
 
   const Submit = useCallback(() => {
     if (canvas === null) return;
+    setMessage(['primary', 'アップロード中...']);
     const data = canvas.toDataURL("image/png").replace(/^data:image\/(png|jpg);base64,/, "");
     fetch(`${setting.apiPath}/image/upload`, {
       method: 'POST',
@@ -38,12 +40,14 @@ export default function ContactPage() {
         category: sharedData.category,
         image: data,
       }),
-    }).then((res) => {
+    }).then(async (res) => {
       if (res.status === 200) {
-        alert('アップロードに成功しました。');
+        setMessage(['info', 'アップロードに成功しました。']);
       } else {
-        alert('アップロードに失敗しました。');
+        setMessage(['danger', 'アップロードに失敗しました。']);
       }
+      await new Promise((resolve) => setTimeout(resolve, setting.waitingTime));
+      setMessage(['secondary', '']);
     });
   }, [canvas, sharedData]);
 
@@ -92,6 +96,7 @@ export default function ContactPage() {
           <Button variant="primary" className="mx-3" disabled={is_valid(sharedData.username, sharedData.category) === false} onClick={Submit}>Submit 📨</Button>
           <Button variant="danger" className="mx-3" onClick={ClearCanvas}>Delete</Button>
         </div>
+        <Alert id="Message" variant={message[0]} className="mt-5">{message[1]}</Alert>
       </div>
     </Layout>
   );
