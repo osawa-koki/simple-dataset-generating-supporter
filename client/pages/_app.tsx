@@ -26,10 +26,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   });
 
   useEffect(() => {
-    console.log('loaded');
     const username = localStorage.getItem('username');
     const category = localStorage.getItem('category');
-    console.log(`username: ${username} | category: ${category}`);
     if (username !== null || category !== null) {
       setSharedData({
         username: username === null ? '' : username,
