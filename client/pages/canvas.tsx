@@ -10,6 +10,7 @@ import setting from "../setting";
 const CANVAS_NAME = 'MyCanvas';
 const USER_ID_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
 const CATEGORY_REGEX = /^[a-zA-Z0-9_-]{3,8}$/;
+const IMAGE_SIZE = 312;
 const is_valid = (username: string, category: string) => {
   return USER_ID_REGEX.test(username) && CATEGORY_REGEX.test(category);
 }
@@ -85,7 +86,7 @@ export default function ContactPage() {
         </Form>
         {(is_valid(sharedData.username, sharedData.category) === false) && <Alert variant="danger" className="mt-3">ユーザ名とカテゴリは半角英数字と記号(アンダースコアとハイフン)の3-8文字で入力してください。</Alert>}
         <div id="CanvasWrapper" className="mt-5">
-          <canvas id={CANVAS_NAME} width={128} height={128} />
+          <canvas id={CANVAS_NAME} width={IMAGE_SIZE} height={IMAGE_SIZE} />
         </div>
         <div className="mt-5 d-flex justify-content-center">
           <Button variant="primary" className="mx-3" disabled={is_valid(sharedData.username, sharedData.category) === false} onClick={Submit}>Submit 📨</Button>
