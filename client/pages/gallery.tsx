@@ -13,6 +13,8 @@ type ImageStruct = {
   deleting: boolean;
 };
 
+const image_fetch_limit = 3;
+
 export default function GalleryPage() {
 
   const [keys, setKeys] = useState<string[]>([]);
@@ -72,6 +74,39 @@ export default function GalleryPage() {
     })();
   };
 
+  const Load = () => {
+    const target_keys = keys.filter((key) => key.split('/')[2] === selected_category);
+    if (target_keys.length === 0) {
+      return;
+    }
+    const new_keys = target_keys.filter((key) => !images.map((image) => image.key).includes(key));
+    if (new_keys.length === 0) {
+      return;
+    }
+    const guids = new_keys.map((key) => key.split('/')[3].replace('.png', '')).slice(0, image_fetch_limit).join(',');
+    (async () => {
+      fetch(`${setting.apiPath}/image/fetch/?user_id=${sharedData.username}&category=${selected_category}&guids=${guids}`)
+        .then(async (res) => {
+          if (res.status === 200) {
+            return await res.json();
+          } else {
+            return null;
+          }
+        }
+        ).then((data) => {
+          if (data === null) {
+            setError('画像データ一覧の取得に失敗しました。');
+            return;
+          }
+          data.images.forEach((image: ImageStruct) => {
+            image.deleting = false;
+          });
+          setImages(images.concat(data.images));
+        }
+        );
+    })();
+  };
+
   useEffect(() => {
     (async () => {
       fetch(`${setting.apiPath}/image/list/?user_id=${sharedData.username}`)
@@ -111,7 +146,7 @@ export default function GalleryPage() {
         setLoading(false);
         return;
       };
-      const guids = target_keys.map((key) => key.split('/')[3].replace('.png', '')).slice(0, 300).join(',');
+      const guids = target_keys.map((key) => key.split('/')[3].replace('.png', '')).slice(0, image_fetch_limit).join(',');
       (async () => {
         fetch(`${setting.apiPath}/image/fetch/?user_id=${sharedData.username}&category=${selected_category}&guids=${guids}`)
           .then(async (res) => {
@@ -208,6 +243,11 @@ export default function GalleryPage() {
                     ))
                   }
                 </div>
+                {
+                  keys.filter((key) => key.split('/')[2] === selected_category).length > images.length && (
+                    <Button variant="info" size="sm" onClick={Load} className="mt-5 d-block m-auto">Load More</Button>
+                  )
+                }
                 </>
               )
             }
