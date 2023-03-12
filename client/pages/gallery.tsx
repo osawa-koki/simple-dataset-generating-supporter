@@ -22,7 +22,7 @@ export default function GalleryPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [selected_category, setSelectedCategory] = useState<string>("");
   const [loeading, setLoading] = useState<boolean>(false);
-  const [deleted_count, setDeletedCount] = useState<number>(0);
+  const [deleted, setDeleted] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { sharedData, setSharedData } = useContext(DataContext);
 
@@ -42,7 +42,7 @@ export default function GalleryPage() {
       if (res.status === 200) {
         const new_images = images.filter((image) => image.key !== key);
         setImages(new_images);
-        setDeletedCount(deleted_count + 1);
+        setDeleted(deleted.concat(key));
       } else {
         setError('画像の削除に失敗しました。');
       }
@@ -110,6 +110,7 @@ export default function GalleryPage() {
   };
 
   useEffect(() => {
+    if (sharedData.username === "") return;
     (async () => {
       fetch(`${setting.apiPath}/image/list/?user_id=${sharedData.username}`)
         .then(async (res) => {
@@ -246,7 +247,7 @@ export default function GalleryPage() {
                   }
                 </div>
                 {
-                  keys.filter((key) => key.split('/')[2] === selected_category).length - deleted_count > images.length && (
+                  keys.filter((key) => key.split('/')[2] === selected_category).length - deleted.length > images.length && (
                     <Button variant="info" size="sm" onClick={Load} className="mt-5 d-block m-auto">Load More</Button>
                   )
                 }
