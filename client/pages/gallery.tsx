@@ -22,6 +22,7 @@ export default function GalleryPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [selected_category, setSelectedCategory] = useState<string>("");
   const [loeading, setLoading] = useState<boolean>(false);
+  const [downloading, setDownloading] = useState<boolean>(false);
   const [deleted, setDeleted] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const { sharedData, setSharedData } = useContext(DataContext);
@@ -51,6 +52,8 @@ export default function GalleryPage() {
 
   const Download = () => {
     (async () => {
+      setDownloading(true);
+      await new Promise((resolve) => setTimeout(resolve, setting.smallWaitingTime));
       fetch(`${setting.apiPath}/image/download/?user_id=${sharedData.username}&category=${selected_category}`)
         .then(async (res) => {
           if (res.status === 200) {
@@ -72,6 +75,7 @@ export default function GalleryPage() {
           a.href = url;
           a.download = `${sharedData.username}_${selected_category}.zip`;
           a.click();
+          setDownloading(false);
         });
     })();
   };
@@ -235,7 +239,7 @@ export default function GalleryPage() {
               ) : (
                 <>
                   {
-                    images.length !== 0 && <Button variant="primary" onClick={Download} className="mt-5 d-block m-auto">Download All</Button>
+                    images.length !== 0 && <Button variant="primary" onClick={Download} className="mt-5 d-block m-auto" disabled={downloading}>Download All</Button>
                   }
                   <div id="ImageDiv" className="mt-5">
                   {
