@@ -1,6 +1,6 @@
 # simple-dataset-generating-supporter
 
-🐀🐀🐀 機械学習のためのデータセットを簡単に生成するためのライブラリです。  
+🐀🐀🐀 機械学習のためのデータセットを簡単に生成するためのWEBサイトです。  
 
 ![成果物](./docs/img/fruit.gif)  
 
