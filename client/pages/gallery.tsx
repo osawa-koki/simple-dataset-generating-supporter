@@ -13,7 +13,7 @@ type ImageStruct = {
   deleting: boolean;
 };
 
-const image_fetch_limit = 3;
+const image_fetch_limit = 100;
 
 export default function GalleryPage() {
 
