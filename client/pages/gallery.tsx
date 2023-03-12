@@ -85,7 +85,8 @@ export default function GalleryPage() {
     if (new_keys.length === 0) {
       return;
     }
-    const guids = new_keys.map((key) => key.split('/')[3].replace('.png', '')).slice(0, image_fetch_limit).join(',');
+    const guids_raw = new_keys.filter(a => !deleted.includes(a)).map((key) => key.split('/')[3].replace('.png', ''));
+    const guids = guids_raw.slice(0, image_fetch_limit).join(',');
     (async () => {
       fetch(`${setting.apiPath}/image/fetch/?user_id=${sharedData.username}&category=${selected_category}&guids=${guids}`)
         .then(async (res) => {
