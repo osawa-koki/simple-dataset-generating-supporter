@@ -111,7 +111,7 @@ export default function GalleryPage() {
         setLoading(false);
         return;
       };
-      const guids = target_keys.map((key) => key.split('/')[3].replace('.png', '')).join(',');
+      const guids = target_keys.map((key) => key.split('/')[3].replace('.png', '')).join(',').slice(0, 300);
       (async () => {
         fetch(`${setting.apiPath}/image/fetch/?user_id=${sharedData.username}&category=${selected_category}&guids=${guids}`)
           .then(async (res) => {
