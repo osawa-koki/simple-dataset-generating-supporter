@@ -110,7 +110,6 @@ export default function GalleryPage() {
   };
 
   useEffect(() => {
-    if (selected_category === "") return;
     (async () => {
       fetch(`${setting.apiPath}/image/list/?user_id=${sharedData.username}`)
         .then(async (res) => {
